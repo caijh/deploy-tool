@@ -16,6 +16,7 @@ function main()
         case $1 in
             start)
                 # cp  $BASE_DIR/config/jenkins.yaml $BASE_DIR/plugins/jenkins/jenkins_home/jenkins.yaml
+                cp  $BASE_DIR/plugins/init/jenkins.init.groovy $BASE_DIR/plugins/jenkins/jenkins_home/init.groovy
                 start
             ;;
             stop) 
