@@ -1,18 +1,18 @@
 #!/bin/bash
-#  deploy controlle
 
-bin_path=""
+# deploy controller
 
 function main()
 {
-    bin_path=$(cd `dirname $0`; pwd)
+    BIN_PATH=$(cd `dirname $0`; pwd)
+    BASE_DIR=$BIN_PATH/..
 
     choose_deploy_type
     deploy_type=$?
 
-    copy_jenkins_settings
-
     start_jenkins
+
+    login_jenkins
 
     if [ $deploy_type -eq 1 ]
     then
@@ -24,30 +24,27 @@ function main()
     stop_jenkins
 }
 
-function copy_jenkins_settings()
-{
-    echo 'copy jenkins settings'
-}
-
 function start_jenkins()
 {
-    $bin_path/jenkinsctl.sh start
-
-    
-    exit_status=$?
-    echo -e "$exit_status"
-    case $exit_status in
-        0) echo -e 'jenkins start successfully.'
+    $BIN_PATH/jenkinsctl.sh start
+    RETVAL=$?
+    case $RETVAL in
+        0)
         ;;
-        *) echo -e 'jenkins start fail.'
+        *)
         exit 1
         ;;
     esac
 }
 
+function login_jenkins()
+{
+    echo 'login to jenkins'
+}
+
 function choose_deploy_type()
 {
-    echo -e 'please choose the deploy type: 1-(new),2(update),q(quit)'
+    echo -e '请选择部署类型: 1-(全新部署),2(更新部署),q(quit)'
     read deploy_type;    
     case $deploy_type in
         1|2) return $deploy_type
@@ -61,19 +58,19 @@ function choose_deploy_type()
 
 function stop_jenkins()
 {
-    echo 'stop jenkins'
-    exec $bin_path/jenkinsctl.sh stop
+    $BIN_PATH/jenkinsctl.sh stop
 }
 
 
 function deploy()
 {
-    echo -e "start deploy"
+    echo -e "开始全新部署"
+    sleep 30s
 }
 
 function update()
 {
-    echo -e "start update"
+    echo -e "开始更新"
 }
 
 main "$@"

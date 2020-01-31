@@ -1,3 +1,6 @@
 .idea/
-plugins/jenkins
+plugins/jenkins/
+!plugins/jenkins/jenkins_home/init.groovy
 bin/jenkins.pid
+logs/
+**/.DS_Store
