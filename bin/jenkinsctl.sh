@@ -6,6 +6,7 @@ function main()
     BIN_PATH=$(cd `dirname $0`; pwd)
     BASE_DIR=$BIN_PATH/..
     JENKINS_BASE_DIR=$BASE_DIR/plugins/jenkins
+    JENKINS_HOME=$JENKINS_BASE_DIR/jenkins_home
     JENKINS_OUT=$BASE_DIR/logs/jenkins.out
 
     if test $# -ne 1
@@ -34,23 +35,23 @@ function main()
 
 start(){
     echo -e 'Jenkins 启动中...'
-    echo "fail" > $BIN_PATH/jenkins.state
-    JENKINS_HOME=$JENKINS_BASE_DIR/jenkins_home nohup nice java -jar $JENKINS_BASE_DIR/jenkins.war \
+    echo "Fail" > $JENKINS_HOME/jenkins.state
+    JENKINS_HOME=$JENKINS_HOME nohup nice java -jar $JENKINS_BASE_DIR/jenkins.war \
         > "$JENKINS_OUT" 2>&1 &
 
     PID=$!
     echo $PID > $BIN_PATH/jenkins.pid
     if [ $PID -ge 0 ]
     then
-        JENKINS_STATE=`cat $BIN_PATH/jenkins.state`
+        JENKINS_STATE=`cat $JENKINS_HOME/jenkins.state`
         TRY_TIMES=10
-        while [ $JENKINS_STATE != "success" ] && [ $TRY_TIMES -ge 0 ]
+        while [ $JENKINS_STATE != "Success" ] && [ $TRY_TIMES -ge 0 ]
         do
             sleep 15s
             TRY_TIMES=$[ $TRY_TIMES - 1 ]
-            JENKINS_STATE=`cat $BIN_PATH/jenkins.state`
+            JENKINS_STATE=`cat $JENKINS_HOME/jenkins.state`
         done
-        if [ $JENKINS_STATE = "success" ] 
+        if [ $JENKINS_STATE = "Success" ] 
         then
             echo -e "Jenkins 启动成功"
         else
@@ -65,7 +66,7 @@ stop(){
     echo -e 'Jenkins 停止中...'
     kill `cat $BIN_PATH/jenkins.pid`
     echo -e  "Jenkins stopped"
-    echo "fail" > $BIN_PATH/jenkins.state
+    echo "Stop" > $JENKINS_HOME/jenkins.state
 }
 
 status(){
