@@ -5,9 +5,6 @@ BASE_DIR=""
 
 DEPLOY_TYPE=1
 
-JENKINS_SERVER="http://localhost:8080"
-CRUMB=""
-
 function main()
 {
     BIN_PATH=$(cd `dirname $0`; pwd)
@@ -15,7 +12,7 @@ function main()
 
     choose_deploy_type
     DEPLOY_TYPE=$?
-
+    
     start_jenkins
 
     login_jenkins
@@ -43,20 +40,6 @@ function start_jenkins()
     esac
 }
 
-function login_jenkins()
-{
-    read -p "input username:" USERNAME
-    read -p "input password:" PASS
-    CRUMB_ISSUER_URL='crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)'
-    CRUMB=$(curl --user $USERNAME:$PASS $JENKINS_SERVER/$CRUMB_ISSUER_URL 2>/dev/null)
-    echo $CRUMB
-    if [[ "$CRUMB" =~ ^Jenkins-Crumb.* ]] 
-    then
-        echo "username or password 错误"
-        login_jenkins
-    fi
-}
-
 function choose_deploy_type()
 {
     read -p '请选择部署类型: 1-(全新部署),2(更新部署),q(quit):' deploy_type
@@ -75,6 +58,10 @@ function stop_jenkins()
     $BIN_PATH/jenkinsctl.sh stop
 }
 
+function login_jenkins()
+{
+    $BIN_PATH/jenkinsctl.sh login
+}
 
 function deploy()
 {
@@ -95,12 +82,22 @@ function deploy()
         echo $item
     done
     read -p "确定要部署以上组件,Y-是，N-收消部署" confirm
-    if [ $confirm -eq 'Y' ] 
+    if [ $confirm == 'Y' ] || [ $confirm == "y" ]
     then
         echo "全新部署开始"
+        start_deploy $deploy_list
     else
         echo "取消部署"
     fi
+}
+
+function start_deploy()
+{
+    for item in $1
+    do
+        echo $item
+        $BIN_PATH/jenkinsctl.sh create_job $item
+    done
 }
 
 function update()

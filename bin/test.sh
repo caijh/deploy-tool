@@ -17,7 +17,7 @@ function login_jenkins()
     CRUMB_ISSUER_URL='crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)'
     CRUMB=$(curl --user $USERNAME:$PASS $JENKINS_SERVER/$CRUMB_ISSUER_URL 2>/dev/null)
     echo $CRUMB
-    if [[ "$CRUMB" =~ ^Jenkins-Crumb.* ]] 
+    if [ $CRUMB == Jenkins-Crumb* ] 
     then
         echo "username or password 错误"
         login_jenkins
@@ -48,9 +48,18 @@ function deploy()
     if [ $confirm == "Y" ] || [ $confirm == "y" ] 
     then
         echo "全新部署开始"
+        start_deploy $deploy_list
     else
         echo "取消部署"
     fi
+}
+
+function start_deploy()
+{
+    for item in $1
+    do
+        echo $item
+    done
 }
 
 main "$@"

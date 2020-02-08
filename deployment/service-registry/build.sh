@@ -1,2 +1,2 @@
-!/bin/bash
-echo "building"
+#!/bin/bash
+echo "building..."
