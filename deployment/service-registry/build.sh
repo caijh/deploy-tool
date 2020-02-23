@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "building..."
+# how to build, 

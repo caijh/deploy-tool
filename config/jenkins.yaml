@@ -21,12 +21,13 @@ jenkins:
   remotingSecurity:
     enabled: true
   scmCheckoutRetryCount: 0
-  securityRealm:
+  securityRealm:HudsonPrivateSecurityRealmConfigurator
     local:
       allowsSignup: false
       enableCaptcha: false
       users:
       - id: "admin"
+        password: "admin"
   slaveAgentPort: -1
   updateCenter:
     sites:
@@ -44,47 +45,8 @@ security:
   sSHD:
     port: -1
 unclassified:
-  buildStepOperation:
-    enabled: false
-  defaultFolderConfiguration:
-    healthMetrics:
-    - worstChildHealthMetric:
-        recursive: true
-  extendedEmailPublisher:
-    adminRequiredForTemplateTesting: false
-    allowUnregisteredEnabled: false
-    charset: "UTF-8"
-    debugMode: false
-    defaultBody: |-
-      $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
-
-      Check console output at $BUILD_URL to view the results.
-    defaultSubject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
-    maxAttachmentSize: -1
-    maxAttachmentSizeMb: 0
-    precedenceBulk: false
-    useSsl: false
-    watchingEnabled: false
-  gitHubPluginConfig:
-    hookUrl: "http://localhost:8080/github-webhook/"
-  gitSCM:
-    createAccountBasedOnEmail: false
-    showEntireCommitSummaryInChanges: false
-    useExistingAccountWithSameEmail: false
   location:
     adminAddress: "address not configured yet <nobody@nowhere>"
     url: "http://localhost:8080/"
-  mailer:
-    charset: "UTF-8"
-    useSsl: false
   pollSCM:
     pollingThreadCount: 10
-  timestamperConfig:
-    allPipelines: false
-    elapsedTimeFormat: "'<b>'HH:mm:ss.S'</b> '"
-    systemTimeFormat: "'<b>'HH:mm:ss'</b> '"
-tool:
-  git:
-    installations:
-    - home: "git"
-      name: "Default"

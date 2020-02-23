@@ -1,0 +1,15 @@
+pipeline {
+    agent any
+
+    environment {
+        K8S_CONFIG = credentials('jenkins-k8s-config')
+    }
+
+    stages {
+       stage('Test') {
+          steps {
+             sh "echo ${K8S_CONFIG}|base64 -d > ~/.kube/config"
+          }
+       }
+    }
+}

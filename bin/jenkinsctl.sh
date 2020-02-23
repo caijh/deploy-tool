@@ -121,7 +121,7 @@ function create_job()
         echo "deployment not found"
         exit 1
     fi
-    RET=$(curl --cookie $COOKIE_JAR -X POST $JENKINS_SERVER/createItem?name=$1 -u $USERNAME:$PASS -H "$CRUMB" -H "Content-Type:application/xml" --data-binary "@$BASE_DIR/config/config.xml")
+    RET=$(curl --cookie $COOKIE_JAR -X POST $JENKINS_SERVER/createItem?name=$1 -u $USERNAME:$PASS -H "$CRUMB" -H "Content-Type:application/xml" --data-binary "@$BASE_DIR/config/jenkins-job-config.xml")
     echo $RET
     if [ $RET -ne 200] 
     then
