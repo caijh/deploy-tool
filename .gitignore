@@ -1,6 +1,6 @@
 .idea/
 plugins/jenkins/
-plugins/kube
+plugins/kube/
 bin/jenkins.pid
 logs/
 **/.DS_Store
