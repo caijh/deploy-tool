@@ -1,0 +1,2 @@
+remote_mysql_dir: /data
+mysql_root_password: '*Test123321test'

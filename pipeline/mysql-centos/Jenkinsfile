@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+
+    tools {
+        ansible
+    }
+
+    stages {
+        stage('Install MySQL') {
+            steps {
+                sh "ansible-playbook -i inventory/hosts playbooks/mysql-centos-playbook.yaml"
+            }
+            post {
+                fail {
+                    echo 'to rollback'
+                }
+            }
+        }
+    }
+}
