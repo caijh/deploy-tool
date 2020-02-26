@@ -12,7 +12,7 @@ pipeline {
             }
             post {
                 fail {
-                    echo 'to rollback'
+                    sh "ansible-playbook -i inventory/hosts mysql-centos-rollback.yaml"
                 }
             }
         }
