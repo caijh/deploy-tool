@@ -5,3 +5,4 @@ bin/jenkins.pid
 logs/
 **/.DS_Store
 tmp/
+**/*.rpm

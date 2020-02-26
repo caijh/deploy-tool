@@ -1,6 +1,8 @@
 ---
 - hosts: dbservers
-  task: 
+  vars_files:
+    - roles/mysql-centos/vars/main.yaml
+  tasks: 
     - name: Stop MySQL
       systemd:
         name: mysqld
@@ -11,4 +13,8 @@
     - name: Uninstall mysql
       yum:
         name: mysql
+        state: absent
+    - name: Remove MySQL Directory
+      file:
+        path: "{{remote_mysql_dir}}/mysql"
         state: absent
