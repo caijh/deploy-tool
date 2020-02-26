@@ -1,0 +1,14 @@
+---
+- hosts: dbservers
+  task: 
+    - name: Stop MySQL
+      systemd:
+        name: mysqld
+        state: stopped
+      become: true
+      become_method: sudo
+      become_user: root
+    - name: Uninstall mysql
+      yum:
+        name: mysql
+        state: absent

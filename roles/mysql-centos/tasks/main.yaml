@@ -1,0 +1,161 @@
+---
+- name: Delete mariadb Linraries
+  yum:
+    name: mariadb-libs
+    state: removed
+
+- name: SELinux SetEnforce Temporarily
+  shell: >
+    setenforce 0
+  become: true
+  become_method: sudo
+
+- name: SELinux SetEnforce Permanently
+  copy:
+    src: "{{playbook_dir}}/roles/mysql-centos/templates/selinux.cnf"
+    dest: /etc/selinux/config
+    mode: 0644
+  become: true
+  become_method: sudo
+
+- block:
+  - name: Create MySQL directory
+    file:
+      path: "{{remote_mysql_dir}}/mysql"
+      state: directory
+      mode: 0755
+
+  - name: Create MySQL directory
+    file:
+      path: "{{remote_mysql_dir}}/utils"
+      state: directory
+      mode: 0755
+
+  - name: Create MySQL Log Directory
+    file:
+      path: "{{remote_mysql_dir}}/mysql/log"
+      state: directory
+      mode: 0755
+
+  - name: Create MySQL Data Directory
+    file:
+      path: "{{remote_mysql_dir}}/mysql/data"
+      state: directory
+      mode: 0755  
+
+  - name: Copy RPM files to Server - MySQL Python
+    copy:
+       src: "files/MySQL-python-1.2.5-1.el7.x86_64.rpm"
+       dest: "{{remote_mysql_dir}}/utils/MySQL-python-1.2.5-1.el7.x86_64.rpm"
+
+
+  - name: Copy RPM files to Server - MySQL Community Common
+    copy:
+       src: "{{playbook_dir}}/roles/mysql-centos/files/mysql-community-common-5.7.29-1.el7.x86_64.rpm"
+       dest: "{{remote_mysql_dir}}/utils/mysql-community-common-5.7.29-1.el7.x86_64.rpm"
+
+
+  - name: Copy RPM files to Server - MySQL Community Libs
+    copy:
+       src: "{{playbook_dir}}/roles/mysql-centos/files/mysql-community-libs-5.7.29-1.el7.x86_64.rpm"
+       dest: "{{remote_mysql_dir}}/utils/mysql-community-libs-5.7.29-1.el7.x86_64.rpm"
+
+
+  - name: Copy RPM files to Server - MySQL Community Libs Compat
+    copy:
+       src: "{{playbook_dir}}/roles/mysql-centos/files/mysql-community-libs-compat-5.7.29-1.el7.x86_64.rpm"
+       dest: "{{remote_mysql_dir}}/utils/mysql-community-libs-compat-5.7.29-1.el7.x86_64.rpm"
+
+
+  - name: Copy RPM files to Server - MySQL Community Client
+    copy:
+       src: "{{playbook_dir}}/roles/mysql-centos/files/mysql-community-client-5.7.29-1.el7.x86_64.rpm"
+       dest: "{{remote_mysql_dir}}/utils/mysql-community-client-5.7.29-1.el7.x86_64.rpm"
+
+
+  - name: Copy RPM files to Server - MySQL Community Server
+    copy:
+       src: "{{playbook_dir}}/roles/mysql-centos/files/mysql-community-server-5.7.29-1.el7.x86_64.rpm"
+       dest: "{{remote_mysql_dir}}/utils/mysql-community-server-5.7.29-1.el7.x86_64.rpm"
+  become: yes
+  become_user: root
+
+- name: Install packages - MySQL Community Common
+  yum:
+     name: "{{remote_mysql_dir}}/utils/mysql-community-common-5.7.29-1.el7.x86_64.rpm"
+     state: present
+  become: yes
+  become_user: root
+
+- name: Install packages - MySQL Community libs
+  yum:
+     name: "{{remote_mysql_dir}}/utils/mysql-community-libs-5.7.29-1.el7.x86_64.rpm"
+     state: present
+  become: yes
+  become_user: root
+
+- name: Install packages - MySQL Community Libs Compat
+  yum:
+     name: "{{remote_mysql_dir}}/utils/mysql-community-libs-compat-5.7.29-1.el7.x86_64.rpm"
+     state: present
+  become: yes
+  become_user: root  
+
+- name: Install packages - MySQL Community Client
+  yum:
+     name: "{{remote_mysql_dir}}/utils/mysql-community-client-5.7.29-1.el7.x86_64.rpm"
+     state: present
+  become: yes
+  become_user: root
+
+- name: Install packages - MySQL Community Server
+  yum:
+     name: "{{remote_mysql_dir}}/utils/mysql-community-server-5.7.29-1.el7.x86_64.rpm"
+     state: present
+  become: yes
+  become_user: root
+
+- name: Install packages - MySql Python
+  yum:
+     name: "{{remote_mysql_dir}}/utils/MySQL-python-1.2.5-1.el7.x86_64.rpm"
+     state: present
+  become: yes
+  become_user: root
+
+- name: copy my.cnf
+  copy:
+    src: "{{playbook_dir}}/roles/mysql-centos/templates/my.cnf"
+    dest: /etc/my.cnf
+    mode: 0644
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: Give Permission to mysql data Directory
+  shell: >
+    chown -R mysql:mysql {{ remote_mysql_dir }}/mysql
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: Start mysql
+  systemd:
+    name: mysqld
+    state: started
+    enabled: yes
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: Get root password
+  shell: "grep 'A temporary password is generated for root@localhost' /{{remote_mysql_dir}}/mysql/log/mysqld.log | awk -F ' ' '{print $(NF)}'"
+  register: root_password 
+  become: true
+  become_method: sudo
+  become_user: root
+
+- name: Update expired root user password
+  command: mysql --user root --password={{ root_password.stdout }} --connect-expired-password --execute="ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ mysql_root_password }}';"
+  become: true
+  become_method: sudo
+  become_user: root
