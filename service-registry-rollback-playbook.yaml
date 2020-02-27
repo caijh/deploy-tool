@@ -2,5 +2,35 @@
 - hosts: localhost 
   vars_files:
     - inventory/group_vars/k8s.yaml
+    - roles/service-registry/vars/main.yaml
   tasks:
-    - service-registry
+    - name: Delete Service-Registry Ingress
+      k8s: 
+        host: '{{ k8s_auth_host }}'
+        api_key: '{{ k8s_auth_api_key }}'
+        state: absent
+        validate_certs: false
+        definition: "{{ lookup('template', 'roles/service-registry/templates/ingress.yaml') | from_yaml }}"
+    - name: Delete Service-Registry StatefulSet
+      k8s: 
+        host: '{{ k8s_auth_host }}'
+        api_key: '{{ k8s_auth_api_key }}'
+        state: absent
+        validate_certs: false
+        definition: "{{ lookup('template', 'roles/service-registry/templates/statefulset.yaml') | from_yaml }}"
+    - name: Delete Service-Registry Service
+      k8s: 
+        host: '{{ k8s_auth_host }}'
+        api_key: '{{ k8s_auth_api_key }}'
+        state: absent
+        validate_certs: false
+        definition: "{{ lookup('template', 'roles/service-registry/templates/service.yaml') | from_yaml }}"
+    - name: Delete Service-Registry ConfigMap
+      k8s: 
+        host: '{{ k8s_auth_host }}'
+        api_key: '{{ k8s_auth_api_key }}'
+        state: absent
+        validate_certs: false
+        definition: "{{ lookup('template', 'roles/service-registry/templates/configmap.yaml') | from_yaml }}"
+
+    
