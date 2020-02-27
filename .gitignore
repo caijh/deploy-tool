@@ -2,7 +2,9 @@
 plugins/jenkins/
 plugins/kube/
 bin/jenkins.pid
-logs/
+logs/**
+!logs/.gitkeep
 **/.DS_Store
-tmp/
+tmp/**
+!tmp/.gitkeep
 **/*.rpm
