@@ -1,18 +1,23 @@
 pipeline {
     agent any
 
-    tools {
-        ansible
-    }
-
     stages {
+        
+
+        // stage('Check') {
+        //     steps {
+        //         echo 'Check if Mysql is running'
+        //         ansiblePlaybook(inventory: "${env.TOOL_HOME}/inventory/hosts", playbook: "${env.TOOL_HOME}/mysql-centos-playbook.yaml", tags: "checks", colorized: true)
+        //     }
+        // }
+
         stage('Install MySQL') {
             steps {
-                sh "ansible-playbook -i inventory/hosts playbooks/mysql-centos-playbook.yaml"
+                sh "ansible-playbook -i ${env.TOOL_HOME}/inventory/hosts ${env.TOOL_HOME}/mysql-centos-playbook.yaml"
             }
             post {
-                fail {
-                    sh "ansible-playbook -i inventory/hosts mysql-centos-rollback.yaml"
+                failure {
+                    sh "ansible-playbook -i ${env.TOOL_HOME}/inventory/hosts ${env.TOOL_HOME}/mysql-centos-rollback.yaml"
                 }
             }
         }

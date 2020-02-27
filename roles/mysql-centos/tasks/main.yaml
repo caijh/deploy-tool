@@ -1,4 +1,9 @@
 ---
+- name: Check if Mysql is Running
+  shell: {{ mysql --version | awk '{ print $5 }'|awk -F\, '{ print $1 }' }}
+  register: mysql_version
+  tags:
+    - checks
 - name: Delete mariadb Linraries
   yum:
     name: mariadb-libs
