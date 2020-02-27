@@ -1,4 +1,4 @@
 eureka_service_address: 'http://eureka-0.eureka:8761/eureka/,http://eureka-1.eureka:8761/eureka/'
 replicas: 2
-image: service-registry
-image_tag: 1.0.0
+image: 10.38.2.12:1000/library/service-registry
+image_tag: '1.0.0'
