@@ -1,0 +1,25 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: eureka
+  namespace: {{ k8s_namespace }}
+  labels:
+    app: eureka
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /service-registry(/|$)(.*)
+            backend:
+              serviceName: eureka
+              servicePort: 8761
+          - path: /eureka
+            backend:
+              serviceName: eureka
+              servicePort: 8761
