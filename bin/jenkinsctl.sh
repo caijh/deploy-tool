@@ -23,7 +23,6 @@ function main()
     else
         case $1 in
             start)
-                # cp  $BASE_DIR/config/jenkins.yaml $BASE_DIR/plugins/jenkins/jenkins_home/jenkins.yaml
                 cp  $BASE_DIR/plugins/init/jenkins.init.groovy $BASE_DIR/plugins/jenkins/jenkins_home/init.groovy
                 start
             ;;
@@ -58,7 +57,7 @@ function usage()
 start(){
     echo -e 'Jenkins 启动中...'
     echo "Fail" > $JENKINS_HOME/jenkins.state
-    DEPLOYMENT_HOME=$BASE_DIR/deployment JENKINS_HOME=$JENKINS_HOME nohup nice java -jar $JENKINS_BASE_DIR/jenkins.war \
+    TOOL_HOME=$BASE_DIR JENKINS_HOME=$JENKINS_HOME nohup nice java -jar $JENKINS_BASE_DIR/jenkins.war \
         > "$JENKINS_OUT" 2>&1 &
 
     PID=$!
