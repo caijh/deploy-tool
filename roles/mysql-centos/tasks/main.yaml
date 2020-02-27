@@ -139,7 +139,7 @@
   become_user: root
 
 - name: Start mysql
-  systemd:
+  service:
     name: mysqld
     state: started
     enabled: yes
