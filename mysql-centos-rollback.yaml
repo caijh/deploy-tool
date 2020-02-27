@@ -4,7 +4,7 @@
     - roles/mysql-centos/vars/main.yaml
   tasks: 
     - name: Stop MySQL
-      systemd:
+      service:
         name: mysqld
         state: stopped
       become: true
