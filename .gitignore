@@ -1,6 +1,6 @@
 .idea/
-plugins/jenkins/
-plugins/kube/
+plugins/**
+!plugins/init/
 bin/jenkins.pid
 logs/**
 !logs/.gitkeep
