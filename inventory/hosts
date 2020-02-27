@@ -1,2 +1,4 @@
 [dbservers]
 192.168.106.131 ansible_ssh_user=root
+
+[mics-clients]
