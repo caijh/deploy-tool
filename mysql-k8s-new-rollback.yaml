@@ -1,0 +1,50 @@
+---
+- hosts: localhost 
+  vars_files:
+    - inventory/group_vars/k8s.yaml
+    - roles/mysql-k8s/defaults/main.yaml
+    - roles/mysql-k8s/vars/main.yaml
+  tasks:
+  - name: Delete Expose MySQL Service
+    k8s: 
+      host: '{{ k8s_auth_host }}'
+      api_key: '{{ k8s_auth_api_key }}'
+      validate_certs: false
+      state: absent
+      namespace: '{{ k8s_namespace }}'
+      definition: "{{ lookup('template', 'roles/mysql-k8s/templates/service.yaml') | from_yaml }}"
+  - name: Delete MySQL Deployment
+    k8s: 
+      host: '{{ k8s_auth_host }}'
+      api_key: '{{ k8s_auth_api_key }}'
+      validate_certs: false
+      state: absent
+      namespace: '{{ k8s_namespace }}'
+      definition: "{{ lookup('template', 'roles/mysql-k8s/templates/deployment.yaml') | from_yaml }}"
+  - name: Delete MySQL Secret
+    k8s: 
+      host: '{{ k8s_auth_host }}'
+      api_key: '{{ k8s_auth_api_key }}'
+      validate_certs: false
+      state: absent
+      namespace: '{{ k8s_namespace }}'
+      definition: "{{ lookup('template', 'roles/mysql-k8s/templates/secret.yaml') | from_yaml }}"
+  - name: Delete MySQL PersistentVolumeClaim
+    k8s: 
+      host: '{{ k8s_auth_host }}'
+      api_key: '{{ k8s_auth_api_key }}'
+      validate_certs: false
+      state: absent
+      namespace: '{{ k8s_namespace }}'
+      definition: "{{ lookup('template', 'roles/mysql-k8s/templates/pvc.yaml') | from_yaml }}"
+  - name: Delete MySQL ConfigMap
+    k8s: 
+      host: '{{ k8s_auth_host }}'
+      api_key: '{{ k8s_auth_api_key }}'
+      validate_certs: false
+      state: absent
+      namespace: '{{ k8s_namespace }}'
+      definition: "{{ lookup('template', 'roles/mysql-k8s/templates/configmap.yaml') | from_yaml }}"
+  
+  
+  
