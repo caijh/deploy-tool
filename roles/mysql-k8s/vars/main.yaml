@@ -1,0 +1,5 @@
+mysql_root_password: MTIzNDU2
+mysql_password: MTIzNDU2
+node_port: 30306
+image: "{{ docker_registry }}/library/mysql"
+image_tag: 5.7

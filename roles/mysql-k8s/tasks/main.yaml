@@ -1,0 +1,41 @@
+---
+- name: Create MySQL PersistentVolumeClaim
+  k8s: 
+    host: '{{ k8s_auth_host }}'
+    api_key: '{{ k8s_auth_api_key }}'
+    validate_certs: false
+    state: present
+    namespace: '{{ k8s_namespace }}'
+    definition: "{{ lookup('template', 'templates/pvc.yaml') | from_yaml }}"
+- name: Create MySQL ConfigMap
+  k8s: 
+    host: '{{ k8s_auth_host }}'
+    api_key: '{{ k8s_auth_api_key }}'
+    validate_certs: false
+    state: present
+    namespace: '{{ k8s_namespace }}'
+    definition: "{{ lookup('template', 'templates/configmap.yaml') | from_yaml }}"
+- name: Create MySQL Secret
+  k8s: 
+    host: '{{ k8s_auth_host }}'
+    api_key: '{{ k8s_auth_api_key }}'
+    validate_certs: false
+    state: present
+    namespace: '{{ k8s_namespace }}'
+    definition: "{{ lookup('template', 'templates/secret.yaml') | from_yaml }}"
+- name: Create MySQL Deployment
+  k8s: 
+    host: '{{ k8s_auth_host }}'
+    api_key: '{{ k8s_auth_api_key }}'
+    validate_certs: false
+    state: present
+    namespace: '{{ k8s_namespace }}'
+    definition: "{{ lookup('template', 'templates/deployment.yaml') | from_yaml }}"
+- name: Expose MySQL Service
+  k8s: 
+    host: '{{ k8s_auth_host }}'
+    api_key: '{{ k8s_auth_api_key }}'
+    validate_certs: false
+    state: present
+    namespace: '{{ k8s_namespace }}'
+    definition: "{{ lookup('template', 'templates/service.yaml') | from_yaml }}"
