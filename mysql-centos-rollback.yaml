@@ -3,18 +3,4 @@
   vars_files:
     - roles/mysql-centos/vars/main.yaml
   tasks: 
-    - name: Stop MySQL
-      service:
-        name: mysqld
-        state: stopped
-      become: true
-      become_method: sudo
-      become_user: root
-    - name: Uninstall mysql
-      yum:
-        name: mysql
-        state: absent
-    - name: Remove MySQL Directory
-      file:
-        path: "{{remote_mysql_dir}}/mysql"
-        state: absent
+    - include_tasks: roles/mysql-centos/tasks/rollback.yaml
