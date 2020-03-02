@@ -8,11 +8,13 @@ pipeline {
 
 
     environment {
+        K8S_CONFIG = credentials('jenkins-k8s-config')
+
         DOCKER_REGISTRY = '192.168.33.10'
         NAMESPACE = 'cloud'
         EUREKA_SERVICE_ADDRESS = 'http://eureka-0.eureka:8761/eureka/,http://eureka-1.eureka:8761/eureka/'
         EUREKA_REPLICAS = '2'
-        K8S_CONFIG = credentials('jenkins-k8s-config')
+        
     }
 
     stages {

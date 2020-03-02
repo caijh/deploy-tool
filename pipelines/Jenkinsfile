@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    environment {
+        K8S_CONFIG = credentials('jenkins-k8s-config')
+        def k8s = readYaml file: "${env.TOOL_HOME}/inventory/k8s.yaml"
+        def datas = readYaml file: "${env.TOOL_HOME}/roles/service-registry/vars/main.yaml"
+        DOCKER_REGISTRY = datas.eureka_service_address
+        NAMESPACE = k8s.k8s_namespace
+        EUREKA_SERVICE_ADDRESS = datas.eureka_service_address
+        EUREKA_REPLICAS = datas.replicas
+    }
+
+    stages {
+        stage('Prepare') {
+            steps {
+                echo "${DOCKER_REGISTRY}"
+            }
+        }
+    }
+}
