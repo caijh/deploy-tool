@@ -1,0 +1,20 @@
+---
+- block:
+  - name: Upload ansible src file
+    copy:
+       src: "files/ansible-{{ version }}.tar.gz"
+       dest: "/tmp/ansible-{{ version }}.tar.gz"
+  - name: Unzip ansible src
+    shell: tar -xvzf /tmp/ansible-{{ version }}.tar.gz -C /tmp
+  - name: Upload openshift src file
+    copy:
+      src: "files/openshift-restclient-python-0.10.2.tar.gz"
+      dest: "/tmp/openshift-restclient-python-0.10.2.tar.gz"
+  - name: Unzip openshift src
+    shell: tar -xvzf /tmp/openshift-restclient-python-0.10.2.tar.gz -C /tmp
+
+- name: Install ansible
+  shell: cd /tmp/ansible-{{ version }} && python setup.py install
+
+- name: Install openshift
+  shell: cd /tmp/openshift-restclient-python-0.10.2 && python setup.py install
