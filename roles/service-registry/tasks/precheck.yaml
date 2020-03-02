@@ -1,0 +1,6 @@
+---
+- name: Check
+  script: files/check.sh {{ version }}
+  register: check_result
+  tags:
+    - checks

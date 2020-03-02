@@ -1,2 +1,2 @@
-mysql-centos
-
+commons
+service-registry
