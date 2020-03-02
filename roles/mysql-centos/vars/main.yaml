@@ -1,3 +1,3 @@
 remote_mysql_dir: /data
-mysql_root_password: '*Test123321test'
+mysql_root_password: '*Test123321'
 mysql_version: 5.7.29

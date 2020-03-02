@@ -9,12 +9,10 @@ pipeline {
 
     environment {
         K8S_CONFIG = credentials('jenkins-k8s-config')
-
         DOCKER_REGISTRY = '192.168.33.10'
         NAMESPACE = 'cloud'
         EUREKA_SERVICE_ADDRESS = 'http://eureka-0.eureka:8761/eureka/,http://eureka-1.eureka:8761/eureka/'
         EUREKA_REPLICAS = '2'
-        
     }
 
     stages {
@@ -34,6 +32,11 @@ pipeline {
         }
 
         stage('Push') {
+            when {
+              expression {
+                currentBuild.result == 'SUCCESS' 
+              }
+            }
             steps {
                 echo 'push image to docker registry'
                 script {
@@ -74,6 +77,12 @@ pipeline {
                     // sh "echo ${K8S_CONFIG} | base64 -d > ~/.kube/config"
                     sh "sed -e 's#{NAMESPACE}#${NAMESPACE}#g;s#{EUREKA_SERVICE_ADDRESS}#${EUREKA_SERVICE_ADDRESS}#g;s#{EUREKA_REPLICAS}#${EUREKA_REPLICAS}#g;s#{IMAGE}#${new_appimage}#g;s#{IMAGE_TAG}#${build_tag}#g' ${env.DEPLOYMENT_HOME}/../charts/service-registry/V1.0/k8s/service-registry.tpl > k8s-deployment.yml"
                     sh "${env.DEPLOYMENT_HOME}/../plugins/kube/kubectl apply -f k8s-deployment.yml"
+                }
+            }
+            post {
+                failure {
+                    echo 'rollbacking'
+
                 }
             }
         }
