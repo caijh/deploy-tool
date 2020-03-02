@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  vars_files:
+    - inventory/group_vars/k8s.yaml
+    - roles/service-registry/vars/main.yaml
+  tasks:
+    - include_tasks: roles/service-registry/tasks/new-rollback.yaml

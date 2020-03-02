@@ -2,3 +2,4 @@ eureka_service_address: 'http://eureka-0.eureka:8761/eureka/,http://eureka-1.eur
 replicas: 2
 image: "{{ docker_registry }}/library/service-registry"
 image_tag: '1.0.0'
+version: '1.0.0'
