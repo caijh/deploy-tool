@@ -1,0 +1,6 @@
+---
+- name: Check MySQL
+  script: files/check.sh {{ mysql_version }}
+  register: check_result
+  tags:
+    - checks
