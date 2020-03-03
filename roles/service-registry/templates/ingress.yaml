@@ -13,13 +13,13 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
-    - http:
-        paths:
-          - path: /service-registry(/|$)(.*)
-            backend:
-              serviceName: eureka
-              servicePort: 8761
-          - path: /eureka
-            backend:
-              serviceName: eureka
-              servicePort: 8761
+  - http:
+      paths:
+      - path: /service-registry(/|$)(.*)
+        backend:
+          serviceName: eureka
+          servicePort: 8761
+      - path: /eureka
+        backend:
+          serviceName: eureka
+          servicePort: 8761

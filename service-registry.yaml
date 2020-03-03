@@ -1,5 +1,5 @@
 ---
-- hosts: localhost 
+- hosts: kubemaster 
   vars_files:
     - inventory/group_vars/k8s.yaml
   roles:

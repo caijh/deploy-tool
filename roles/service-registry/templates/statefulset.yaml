@@ -16,14 +16,14 @@ spec:
         app: eureka
     spec:
       containers:
-        - name: service-registry
-          image: '{{ image }}:{{ image_tag}}'
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8761
-          env:
-            - name: EUREKA_SERVER_ADDRESS
-              valueFrom:
-                configMapKeyRef:
-                  name: eureka-cm
-                  key: eureka_service_address
+      - name: service-registry
+        image: '{{ image }}:{{ image_tag}}'
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8761
+        env:
+        - name: EUREKA_SERVER_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: eureka-cm
+              key: eureka_service_address
