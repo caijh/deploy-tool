@@ -1,33 +1,25 @@
 ---
 - block:
-  - name: Upload Jinja2 src file
+  - name: Create directory
+    file:
+      path: "/tmp/rpms"
+      state: directory
+      mode: 0755
+
+  - name: Upload rpm to Server
     copy:
-      src: "files/Jinja2-2.11.1.tar.gz"
-      dest: "/tmp/Jinja2-2.11.1.tar.gz"
-  - name: Unzip Jinja2 src
-    shell: tar -xvzf /tmp/Jinja2-2.11.1.tar.gz -C /tmp
+      src: "files/packages/centos7"
+      dest: "/tmp/rpms"
 
   - name: Upload ansible src file
     copy:
-       src: "files/ansible-{{ version }}.tar.gz"
+       src: "files/packages/ansible-{{ version }}.tar.gz"
        dest: "/tmp/ansible-{{ version }}.tar.gz"
-
   - name: Unzip ansible src
     shell: tar -xvzf /tmp/ansible-{{ version }}.tar.gz -C /tmp
 
-  - name: Upload openshift src file
-    copy:
-      src: "files/openshift-restclient-python-0.10.2.tar.gz"
-      dest: "/tmp/openshift-restclient-python-0.10.2.tar.gz"
-
-  - name: Unzip openshift src
-    shell: tar -xvzf /tmp/openshift-restclient-python-0.10.2.tar.gz -C /tmp
-
-- name: Install Jinja2
-  shell: cd /tmp/Jinja2-2.11.1 && python setup.py install
+- name: Install rpms
+  shell: rpm -Uvh --force --nodeps /tmp/rpms/centos7/*rpm
 
 - name: Install ansible
   shell: cd /tmp/ansible-{{ version }} && python setup.py install
-
-- name: Install openshift
-  shell: cd /tmp/openshift-restclient-python-0.10.2 && python setup.py install
