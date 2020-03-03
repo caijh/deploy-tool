@@ -1,5 +1,5 @@
 ---
 - name: Post Checks, invoke auto test scripts
-  shell: mysql --version
+  script: files/check.sh
   register: test_result
   ignore_errors: True

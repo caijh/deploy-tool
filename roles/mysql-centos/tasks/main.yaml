@@ -6,6 +6,10 @@
   include_tasks: tasks/new.yaml
   when: check_result.stdout=='New'
 
+- name: Backup when check_result is Upgrade
+  include_tasks: tasks/backup.yaml
+  when: check_result.stdout=='Upgrade'
+
 - name: Upgrade mysql when check_result is upgrade
   include_tasks: tasks/upgrade.yaml
   when: check_result.stdout=='Upgrade'
@@ -14,5 +18,9 @@
   include_tasks: tasks/postchecks.yaml
 
 - name: Rollback when auto test fail
-  include_tasks: tasks/rollback.yaml
-  when: test_result.rc > 0
+  include_tasks: tasks/new-rollback.yaml
+  when: test_result.rc > 0 and check_result.stdout=='New'
+
+- name: Rollback Upgrade when auto test fail
+  include_tasks: tasks/upgrade-rollback.yaml
+  when: test_result.rc > 0 and check_result.stdout=='Upgrade'
