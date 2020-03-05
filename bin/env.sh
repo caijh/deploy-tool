@@ -1,6 +1,10 @@
 #!/bin/bash
 # check deploy-tool plugins is installed or not
 
+base_dir=$(cd `dirname $0`; pwd)/..
+
+source $base_dir/bin/log.sh
+
 if [ -z $(command -v ansible) ] 
 then
     error "Yout need to install ansible..."
