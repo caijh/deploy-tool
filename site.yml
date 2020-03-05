@@ -1,0 +1,16 @@
+---
+# install ansible on k8s master node, in order to use k8s module
+- hosts: k8s
+  roles:
+  - ansible
+  - mysql-k8s
+  - service-registry
+  - mics
+
+- hosts: dbservers
+  roles:
+  - mysql-centos 
+  
+- hosts: micsclients
+  roles:
+  - micsclient
