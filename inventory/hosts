@@ -1,7 +1,12 @@
-[dbservers]
-192.168.196.130 ansible_ssh_user=root
-192.168.196.131 ansible_ssh_user=root
-
 # k8s cluster one master node, one only, no more need
-[kubemaster]
-10.38.2.12 ansible_ssh_user=root
+[k8s]
+10.38.2.12
+
+[dbservers]
+192.168.106.131
+
+# 192.168.196.130
+# 192.168.196.131
+
+[micsclients]
+192.168.106.130
