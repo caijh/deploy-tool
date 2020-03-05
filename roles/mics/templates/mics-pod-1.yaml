@@ -1,0 +1,189 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mics-{{name}}-1
+  namespace: {{k8s_namespace}}
+  labels:
+    app: mics-{{name}}-1
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - {{node_1_name}}
+  volumes:
+  - name: tmp-dir
+    hostPath: 
+      path: /tmp
+  hostNetwork: true
+  containers:
+  - name: mics
+    image: "{{image}}:{{image_tag}}"
+    ports:
+    - containerPort: 9999
+      hostPort: 9999
+    - containerPort: 10008
+      hostPort: 10008
+    - containerPort: 9998
+      hostPort: 9998
+    - containerPort: 28777
+      hostPort: 28777
+      protocol: "UDP"
+    - containerPort: 22201
+      hostPort: 22201
+    - containerPort: 22203
+      hostPort: 22203
+    - containerPort: 22205
+      hostPort: 22205
+    - containerPort: 22207
+      hostPort: 22207
+    - containerPort: 22209
+      hostPort: 22209
+    - containerPort: 22211
+      hostPort: 22211
+    - containerPort: 22213
+      hostPort: 22213
+    - containerPort: 22221
+      hostPort: 22221
+    - containerPort: 22223
+      hostPort: 22223
+    - containerPort: 22241
+      hostPort: 22241
+    - containerPort: 22226
+      hostPort: 22226
+    - containerPort: 21201
+      hostPort: 21201
+    - containerPort: 21203
+      hostPort: 21203
+    - containerPort: 21205
+      hostPort: 21205
+    - containerPort: 21207
+      hostPort: 21207
+    - containerPort: 21209
+      hostPort: 21209
+    - containerPort: 21213
+      hostPort: 21213
+    - containerPort: 21215
+      hostPort: 21215
+    - containerPort: 21217
+      hostPort: 21217
+    - containerPort: 21219
+      hostPort: 21219
+    - containerPort: 21221
+      hostPort: 21221
+    - containerPort: 21223
+      hostPort: 21223
+    - containerPort: 21225
+      hostPort: 21225
+    - containerPort: 21226
+      hostPort: 21226
+    - containerPort: 21227
+      hostPort: 21227
+    - containerPort: 21229
+      hostPort: 21229
+    - containerPort: 21233
+      hostPort: 21233
+    - containerPort: 21235
+      hostPort: 21235
+    - containerPort: 21199
+      hostPort: 21199
+    - containerPort: 21501
+      hostPort: 21501
+    - containerPort: 21601
+      hostPort: 21601
+    - containerPort: 18801
+      hostPort: 18801
+    - containerPort: 18802
+      hostPort: 18802
+    - containerPort: 18803
+      hostPort: 18803
+    - containerPort: 18804
+      hostPort: 18804
+    - containerPort: 18805
+      hostPort: 18805
+    - containerPort: 18777
+      hostPort: 18777
+    - containerPort: 18806
+      hostPort: 18806
+    - containerPort: 18807
+      hostPort: 18807
+    - containerPort: 18808
+      hostPort: 18808
+    - containerPort: 18809
+      hostPort: 18809
+    - containerPort: 18810
+      hostPort: 18810
+    - containerPort: 18811
+      hostPort: 18811
+    - containerPort: 18812
+      hostPort: 18812
+    - containerPort: 18813
+      hostPort: 18813
+    volumeMounts:
+    - mountPath: /tmp
+      name: tmp-dir
+    env:
+    - name: MICS_MACHINE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: NODE_IP
+      value: {{node_ip_1}}/24
+    - name: PEER_NODE_IP
+      value: {{node_ip_2}}/24
+    - name: DB_TYPE
+      value: mysql
+    - name: DB_SERVER
+      value: "{{db_ip}}:{{db_port}}"
+    - name: DB_NAME
+      value: {{db_name}}
+    - name: DB_USER
+      value: {{db_user}}
+    - name: DB_PASSWORD
+      value: {{db_password}}
+    - name: DB_CHARSET
+      value: gb18030
+    - name: DB_HOST
+      value: {{db_ip}}
+    - name: DB_PORT
+      value: "{{db_port}}"
+    - name: CENTER_DB_TYPE
+      value: mysql
+    - name: CENTER_DB_SERVER
+      value: "{{center_db_ip}}:{{center_db_port}}"
+    - name: CENTER_DB_NAME
+      value: {{center_db_name}}
+    - name: CENTER_DB_USER
+      value: {{center_db_user}}
+    - name: CENTER_DB_PASSWORD
+      value: {{center_db_password}}
+    - name: CENTER_DB_CHARSET
+      value: gb18030
+    - name: CENTER_DB_HOST
+      value: {{center_db_ip}}
+    - name: CENTER_DB_PORT
+      value: "{{center_db_port}}"
+    - name: ENCRYPT_FLAG
+      value: "0"
+    - name: IOT_REMOTE_FLAG
+      value: "0"
+    - name: IOT_REMOTE_IP1
+      value: {{iot_remote_ip1}}
+    - name: IOT_REMOTE_IP2
+      value: {{iot_remote_ip2}}
+    - name: GPU_SERVER_FLAG
+      value: "1"
+    - name: GPU_SERVER_IP1
+      value: {{gpu_server_ip1}}
+    - name: GPU_SERVER_IP2
+      value: {{gpu_server_ip2}}
+    - name: NIC
+      value: ens33
+    - name: VIRTUAL_IP
+      value: {{virtual_ip}}
+    - name: NET_MASK
+      value: {{net_mask}}

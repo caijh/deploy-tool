@@ -10,8 +10,8 @@ function main()
 
     $base_dir/bin/checksettings.sh
 
-    read_deployment_orders "$base_dir/deployment.orders.txt"
-    
+    # read_deployment_orders "$base_dir/deployment.orders.txt"
+    ansible-playbook -i $base_dir/inventory/hosts $base_dir/site.yml
 }
 
 function read_deployment_orders() {

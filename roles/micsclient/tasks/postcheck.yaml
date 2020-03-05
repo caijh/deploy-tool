@@ -1,0 +1,5 @@
+---
+- name: Invoke auto test scripts
+  script: files/test.ps1
+  register: test_result
+  ignore_errors: True

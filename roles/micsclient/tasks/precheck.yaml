@@ -1,0 +1,5 @@
+---
+- script: files/check.ps1
+  register: check_result
+  tags:
+    - checks

@@ -1,0 +1,4 @@
+---
+- name: Upgrade rollback
+  win_shell: echo 'rollback upgrade'
+  

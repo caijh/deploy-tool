@@ -1,0 +1,26 @@
+---
+- name: Check to New or Upgrade
+  include_tasks: tasks/precheck.yaml
+
+- name: Deploy when check_result is New
+  include_tasks: tasks/new.yaml
+  when: check_result.stdout=='New'
+
+- name: Backup when check_result is Upgrade
+  include_tasks: tasks/backup.yaml
+  when: check_result.stdout=='Upgrade'
+
+- name: Upgrade when check_result is upgrade
+  include_tasks: tasks/upgrade.yaml
+  when: check_result.stdout=='Upgrade'
+
+- name: Invoke auto test scripts
+  include_tasks: tasks/postcheck.yaml
+
+- name: Rollback New when auto test fail
+  include_tasks: tasks/new-rollback.yaml
+  when: test_result.rc > 0 and check_result.stdout=='New'
+
+- name: Rollback Uppgrade when auto test fail
+  include_tasks: tasks/upgrade-rollback.yaml
+  when: test_result.rc > 0 and check_result.stdout=='Upgrade'
