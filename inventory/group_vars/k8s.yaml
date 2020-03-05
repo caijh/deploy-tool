@@ -1,3 +1,4 @@
+---
 ansible_ssh_user: root
 
 k8s_auth_host: 'https://10.38.2.12:6443'
