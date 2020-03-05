@@ -1,25 +1,18 @@
 ---
 - block:
-  - name: Create directory
+  - name: Create upload remote directory
     file:
-      path: "/tmp/rpms"
+      path: "{{ upload_remote_dir }}"
       state: directory
       mode: 0755
 
-  - name: Upload rpm to Server
+  - name: Upload files
     copy:
-      src: "files/packages/centos7"
-      dest: "/tmp/rpms"
+      src: "files/"
+      dest: "{{ upload_remote_dir }}/{{ role_name }}"
 
-  - name: Upload ansible src file
-    copy:
-       src: "files/packages/ansible-{{ version }}.tar.gz"
-       dest: "/tmp/ansible-{{ version }}.tar.gz"
   - name: Unzip ansible src
-    shell: tar -xvzf /tmp/ansible-{{ version }}.tar.gz -C /tmp
+    shell: tar -xvzf {{ upload_remote_dir }}/{{ role_name }}/ansible-{{ version }}.tar.gz -C {{ upload_remote_dir }}/{{ role_name }}
 
-- name: Install rpms
-  shell: rpm -Uvh --force --nodeps /tmp/rpms/centos7/*rpm
-
-- name: Install ansible
-  shell: cd /tmp/ansible-{{ version }} && python setup.py install
+- name: Install
+  shell: cd {{ upload_remote_dir }}/{{ role_name }} && chmod +x *.sh && ./install.sh

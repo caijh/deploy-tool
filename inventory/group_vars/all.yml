@@ -1,0 +1,2 @@
+upload_remote_dir: /tmp/deploy-tool
+win_upload_remote_dir: C:\Temp

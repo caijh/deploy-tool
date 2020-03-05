@@ -2,7 +2,7 @@
 - name: Check Ansbile is installed or not
   script: files/check.sh
   register: check_result
-
+  
 - name: Install Ansible when ansible is not installed
   include_tasks: tasks/new.yaml
   when: check_result.stdout=='New'
