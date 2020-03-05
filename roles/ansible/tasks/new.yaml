@@ -15,4 +15,4 @@
     shell: tar -xvzf {{ upload_remote_dir }}/{{ role_name }}/ansible-{{ version }}.tar.gz -C {{ upload_remote_dir }}/{{ role_name }}
 
 - name: Install
-  shell: cd {{ upload_remote_dir }}/{{ role_name }} && chmod +x *.sh && ./install.sh
+  shell: cd {{ upload_remote_dir }}/{{ role_name }} && chmod +x *.sh && ./install.sh {{ version }}
