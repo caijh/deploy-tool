@@ -1,0 +1,6 @@
+---
+- hosts: micsclients
+  vars_files:
+  - inventory/group_vars/micsclients.yaml
+  roles:
+  - micsclient
