@@ -1,8 +1,11 @@
+# when inventory/hosts add group, you should change here
 ---
 - hosts: k8s,dbservers
+  gather_facts: no
   tasks:
-    - ping:
+  - ping:
 
 - hosts: micsclients
+  gather_facts: no
   tasks:
-    - win_ping:
+  - win_ping:
