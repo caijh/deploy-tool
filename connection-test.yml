@@ -1,0 +1,8 @@
+---
+- hosts: k8s,dbservers
+  tasks:
+    - ping:
+
+- hosts: micsclients
+  tasks:
+    - win_ping:
