@@ -1,10 +1,12 @@
 # when inventory/hosts add group, you should change here
 ---
+# linux ping
 - hosts: k8s,dbservers
   gather_facts: no
   tasks:
   - ping:
 
+# windows ping
 - hosts: micsclients
   gather_facts: no
   tasks:
