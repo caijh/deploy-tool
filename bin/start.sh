@@ -1,17 +1,15 @@
 #!/bin/bash
 
-base_dir=$(cd `dirname $0`; pwd)/..
-
+source ./env.sh
 source $base_dir/bin/log.sh
 
 function main()
 {
-    $base_dir/bin/env.sh
+    $base_dir/bin/checkplugins.sh
 
     $base_dir/bin/checksettings.sh
 
-    # read_deployment_orders "$base_dir/deployment.orders.txt"
-    ansible-playbook -i $base_dir/inventory/hosts $base_dir/site.yml
+    read_deployment_orders "$base_dir/deployment.orders.txt"
 }
 
 function read_deployment_orders() {

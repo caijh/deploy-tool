@@ -1,9 +1,8 @@
 #!/bin/bash
 # Check Settings is correct or not
 
-base_dir=$(cd `dirname $0`; pwd)/..
-
+source env.sh
 source $base_dir/bin/log.sh
 
-note "Before auto deploy, we must check connection. If connection is failed, will stop to deploy!"
+note "开始一键部署前最好，检查与目标主机的连接是否正常。"
 ansible-playbook -i inventory/hosts playbooks/connection-test.yml
