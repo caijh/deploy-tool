@@ -1,3 +1,3 @@
 #!/bin/sh
 
-base_dir=$(dirname $(dirname $0))
+base_dir=$(dirname $(cd `dirname $0`;pwd))
