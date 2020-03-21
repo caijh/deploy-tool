@@ -1,0 +1,8 @@
+---
+simplemicroservices:
+- app_name: authservice
+  image: authservice
+  image_tag: 1.0.00
+- app_name: gateway
+  image: gateway
+  image_tag: 1.0.00

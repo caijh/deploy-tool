@@ -1,5 +1,0 @@
----
-- name: Post Checks, invoke auto test scripts
-  script: files/test.sh
-  register: test_result
-  ignore_errors: True

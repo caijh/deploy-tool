@@ -1,3 +1,0 @@
----
-- name: Backup
-  script: files/backup.ps1

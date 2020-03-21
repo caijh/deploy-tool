@@ -1,3 +1,0 @@
----
-- name: 'Upgrade'
-  win_shell: echo 'Upgrade'

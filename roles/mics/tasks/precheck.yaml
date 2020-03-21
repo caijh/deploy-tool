@@ -1,6 +1,0 @@
----
-- name: Check
-  script: files/check.sh
-  register: check_result
-  tags:
-    - checks
