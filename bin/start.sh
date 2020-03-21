@@ -54,10 +54,12 @@ function deploy_microservices() {
         local image=$(echo $app_info | shyaml get-value image)
         local image_tag=$(echo $app_info | shyaml get-value image_tag)
 
+        # 删除原role
         if [ -d "$base_dir/tmp/playbooks/roles/$app_name"] 
         then
             rm -rf "$base_dir/tmp/playbooks/roles/$app_name"
         fi
+        # 根据模板生成具体的role
         cat <<EOF > "$base_dir/tmp/playbooks/${app_name}.yaml"
 ---
 - hosts: k8s 
