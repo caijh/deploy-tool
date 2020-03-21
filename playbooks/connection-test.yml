@@ -7,7 +7,7 @@
   - ping:
 
 # windows ping
-- hosts: micsclients
+- hosts: clients
   gather_facts: no
   tasks:
   - win_ping:

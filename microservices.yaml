@@ -1,5 +1,5 @@
 ---
-simplemicroservices:
+microservices:
 - app_name: authservice
   image: authservice
   image_tag: 1.0.00
