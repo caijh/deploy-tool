@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source ./env.sh
-source ./log.sh
+source $(dirname $(cd `dirname $0`;pwd))/bin/env.sh
+source $base_dir/bin/log.sh
 
 function main()
 {
@@ -49,25 +49,20 @@ function deploy_microservices() {
     local i=0
     while [ $i -lt $length ] 
     do
-        local app_info=$(cat "$base_dir/microservices.yaml" | shyaml get-length microservices.$i)
-        local app_name=$(echo $app_info | shyaml get-value app_name)
-        local image=$(echo $app_info | shyaml get-value image)
-        local image_tag=$(echo $app_info | shyaml get-value image_tag)
+        local app_info=$(cat "$base_dir/microservices.yaml" | shyaml get-value microservices.$i)
+        local app_name=$(cat "$base_dir/microservices.yaml" | shyaml get-value microservices.$i | shyaml get-value app_name)
+        local image=$(cat "$base_dir/microservices.yaml" | shyaml get-value microservices.$i | shyaml get-value image)
+        local image_tag=$(cat "$base_dir/microservices.yaml" | shyaml get-value microservices.$i | shyaml get-value image_tag)
 
         # 删除原role
-        if [ -d "$base_dir/tmp/playbooks/roles/$app_name"] 
+        if [ -d "$base_dir/tmp/playbooks/roles/$app_name" ] 
         then
             rm -rf "$base_dir/tmp/playbooks/roles/$app_name"
         fi
         # 根据模板生成具体的role
-        cat <<EOF > "$base_dir/tmp/playbooks/${app_name}.yaml"
----
-- hosts: k8s 
-  roles:
-    - app_name
-EOF     
+        cat "$base_dir/templates/microservice-playbook.yaml" > "$base_dir/tmp/playbooks/${app_name}.yaml"  
         sed -i "s/app_name/$app_name/" "$base_dir/tmp/playbooks/${app_name}.yaml"
-        cp "$base_dir/templates/microserivce" "$base_dir/tmp/playbooks/roles/$app_name"
+        cp -r "$base_dir/templates/microserivce" "$base_dir/tmp/playbooks/roles/$app_name"
 
         info "开始部署微服务：$app_name"
 

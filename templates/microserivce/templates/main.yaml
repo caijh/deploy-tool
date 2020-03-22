@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: {{app_name}}
-        image: "{{image}}:{{image_tag}}"
+        image: "{{docker_registry}}/{{image}}:{{image_tag}}"
         ports:
         - containerPort: 8080
 

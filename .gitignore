@@ -1,6 +1,7 @@
 .idea/
 plugins/**
 !plugins/init/
+!plugins/ansible/
 bin/jenkins.pid
 logs/**
 !logs/.gitkeep
