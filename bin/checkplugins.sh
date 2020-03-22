@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source ./env.sh
+source $(dirname $(cd `dirname $0`;pwd))/bin/env.sh
 source $base_dir/bin/log.sh
 
 if [ -z $(command -v ansible) ] 
