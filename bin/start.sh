@@ -94,7 +94,7 @@ function deploy_microservices() {
 
         info "开始部署微服务：$app_name"
 
-        ansible-playbook -i "$base_dir/inventory/hosts" "$base_dir/tmp/playbooks/${app_name}.yaml" --extra-vars "app_name=$app_name image=$image image_tag=$image_tag"
+        ansible-playbook -i "$base_dir/inventory/hosts" "$base_dir/tmp/playbooks/${app_name}.yaml" --extra-vars "base_dir=$base_dir app_name=$app_name image=$image image_tag=$image_tag"
         
         success "部署成功"
 
