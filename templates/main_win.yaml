@@ -1,0 +1,44 @@
+---
+- name: 上传文件
+  win_copy:
+    src: files/
+    dest: "{{ win_upload_remote_dir }}/{{ role_name }}"
+
+- name:  上传根据模板生成的配置文件
+  win_template: src="{{item}}" dest="{{ win_upload_remote_dir }}\\{{ role_name }}/config"
+  loop: "{{ lookup('fileglob', 'templates/*', wantlist=True) }}"
+
+- name: 检查是全新安装还是升级
+  win_shell: cd "{{win_upload_remote_dir}}\\{{role_name}}" ; ./check.ps1
+  register: check_result
+  tags:
+    - checks
+
+- name: 检查结果
+  debug:
+    msg: "deploy type is {{check_result.stdout}}"
+
+- name: 全新安装
+  win_shell: cd "{{win_upload_remote_dir}}\\{{role_name}}" ; ./install.ps1
+  when: check_result.stdout=='New'
+
+- name: 备份
+  win_shell: cd "{{win_upload_remote_dir}}\\{{role_name}}" ; ./backup.ps1
+  when: check_result.stdout=='Upgrade'
+
+- name: 升级
+  win_shell: cd "{{win_upload_remote_dir}}\\{{role_name}}" ; ./upgrade.ps1
+  when: check_result.stdout=='Upgrade'
+
+- name: 自动化测试
+  win_shell: cd "{{win_upload_remote_dir}}\\{{role_name}}" ; ./test.ps1
+  register: test_result
+  ignore_errors: True
+
+- name: 自动化测试失败，回滚安装
+  win_shell: cd "{{win_upload_remote_dir}}\\{{role_name}}" ; ./new-rollback.ps1
+  when: test_result.rc > 0 and check_result.stdout=='New'
+
+- name: 自动化测试失败，回滚升级
+  win_shell: cd "{{win_upload_remote_dir}}\\{{role_name}}" ; ./upgrade-rollback.ps1
+  when: test_result.rc > 0 and check_result.stdout=='Upgrade'

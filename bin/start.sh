@@ -9,7 +9,7 @@ function main()
 
     $base_dir/bin/checksettings.sh
 
-    # read_deployment_orders "$base_dir/deployment.orders.txt"
+    read_deployment_orders "$base_dir/deployment.orders.txt"
 
     deploy_microservices
 }
@@ -32,14 +32,33 @@ function deploy_main()
 {
     info "开始部署 $1"
 
-    ansible-playbook -i $base_dir/inventory/hosts $base_dir/$1.yaml
-    
-    ret=$?
-    if [ $ret -eq 0 ] 
+    local main_template="main.yaml"
+    if [ -e $base_dir/$deployment_home/roles/$1/files/check.ps1 ] 
     then
-        success "部署$1成功"
+        main_template="main_win.yaml"
+    fi
+
+    if [ ! -d "$base_dir/$deployment_home/roles/$1/files/config" ] 
+    then
+        mkdir "$base_dir/$deployment_home/roles/$1/files/config"
+    fi
+
+    if [ ! -d "$base_dir/$deployment_home/roles/$1/tasks" ] 
+    then
+        mkdir "$base_dir/$deployment_home/roles/$1/tasks"
+    fi
+    
+    cp $base_dir/templates/$main_template $base_dir/$deployment_home/roles/$1/tasks/main.yaml
+
+    ANSIBLE_LOG_PATH="$base_dir/logs/${1}.log" ansible-playbook -i $base_dir/inventory/hosts $base_dir/$deployment_home/$1.yaml --extra-vars "base_dir=$base_dir"
+
+    local test_result=`cat $base_dir/logs/${1}_test.log`
+    if [ $test_result -eq 0 ] 
+    then
+        success "部署$app_name成功"
     else
-        error "部署$1失败"
+        error "部署$app_name失败, 请修改后，再执行"
+        exit 1
     fi
     
 }

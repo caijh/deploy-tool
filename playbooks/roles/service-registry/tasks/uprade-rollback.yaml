@@ -1,6 +1,0 @@
----
-- name: Rollback ConfigMap
-  shell: kubectl apply -f /tmp/yaml/eureka-cm-configmap.yaml
-
-- name: Rollback StatefulSet
-  shell: kubectl apply -f /tmp/backups/yaml/eureka-statefulset.yaml

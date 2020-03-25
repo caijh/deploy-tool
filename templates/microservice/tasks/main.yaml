@@ -1,0 +1,49 @@
+---
+- name: 上传文件
+  copy:
+    src: files/
+    dest: "{{ upload_remote_dir }}/{{ role_name }}"
+
+- name:  上传根据模板生成的配置文件
+  template: src="{{item}}" dest="{{ upload_remote_dir }}/{{ role_name }}/config"
+  loop: "{{ lookup('fileglob', 'templates/*', wantlist=True) }}"
+
+- name: 检查是全新安装还是升级
+  shell: cd "{{ upload_remote_dir }}/{{ role_name }}" && chmod +x *.sh && ./check.sh
+  register: check_result
+
+- name: Log检查结果
+  shell: echo "{{check_result.stdout}}" > "{{base_dir}}/logs/{{role_name}}_check.log"
+  delegate_to: 127.0.0.1
+
+- name: 安装
+  shell: cd {{ upload_remote_dir }}/{{ role_name }} && chmod +x *.sh && ./install.sh
+  when: check_result.stdout=='New'
+  ignore_errors: True
+
+- name: 备份
+  shell: cd {{ upload_remote_dir }}/{{ role_name }} && chmod +x *.sh && ./backup.sh
+  when: check_result.stdout=='Upgrade'
+
+- name: 升级
+  shell: > 
+        cd {{ upload_remote_dir }}/{{ role_name }} && chmod +x *.sh && ./upgrade.sh
+  when: check_result.stdout=='Upgrade'
+  ignore_errors: True
+
+- name: 自动化测试
+  shell: cd {{ upload_remote_dir }}/{{ role_name }} && chmod +x *.sh && ./test.sh
+  register: test_result
+  ignore_errors: True
+
+- name: Log自动化测试结果
+  shell: echo "{{test_result.rc}}" > "{{base_dir}}/logs/{{role_name}}_test.log"
+  delegate_to: 127.0.0.1
+
+- name: 自动化测试失败，回滚安装
+  shell: cd {{ upload_remote_dir }}/{{ role_name }} && chmod +x *.sh && ./new-rollback.sh
+  when: test_result.rc > 0 and check_result.stdout=='New'
+
+- name: 自动化测试失败，回滚升级
+  shell: cd {{ upload_remote_dir }}/{{ role_name }} && chmod +x *.sh && ./upgrade-rollback.sh
+  when: test_result.rc > 0 and check_result.stdout=='Upgrade'

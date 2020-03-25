@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eureka-conf
+  namespace: {{k8s_namespace}}
+data:
+  # if you want to deploy n instances of eureka cluster,
+  # you should set eureka_service_address: http://eureka-0.eureka:8761/eureka,...,http://eureka-(n-1).eureka:8761/eureka
+  eureka_service_address: {{eureka_service_address}}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eureka
+  namespace: {{k8s_namespace}}
+spec:
+  serviceName: 'eureka'
+  replicas: 2
+  selector:
+    matchLabels:
+      app: eureka # 符合目标的Pod有此标签
+  template:
+    metadata:
+      labels:
+        app: eureka  # Pod副本的标签
+    spec:
+      containers:
+        - name: service-registry
+          image: "{{image}}:{{image_tag}}"
+          ports:
+            - containerPort: 8761
+          env:
+            - name: EUREKA_SERVER_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: eureka-conf
+                  key: eureka_service_address
+          args:
+            - --spring.profiles.active=prod
+          readinessProbe:              #就绪探针
+            tcpSocket:
+              port: 8761
+            initialDelaySeconds: 20    #延迟加载时间
+            periodSeconds: 5           #重试时间间隔
+            timeoutSeconds: 10         #超时时间设置
+            failureThreshold: 5        #探测失败的重试次数
+          livenessProbe:               #存活探针
+            tcpSocket:
+              port: 8761
+            initialDelaySeconds: 60    #延迟加载时间
+            periodSeconds: 5           #重试时间间隔
+            timeoutSeconds: 5          #超时时间设置
+            failureThreshold: 3        #探测失败的重试次数
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eureka
+  namespace: {{k8s_namespace}}
+  labels:
+    app: eureka
+spec:
+  clusterIP: None
+  ports:
+    - port: 8761
+      name: eureka
+  selector:
+    app: eureka
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: eureka
+  namespace: {{k8s_namespace}}
+  labels:
+    app: eureka
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/configuration-snippet: | #解决样式问题
+      rewrite /eureka/(.*)  /service-registry/eureka/$1 break;
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /service-registry(/|$)(.*)
+            backend:
+              serviceName: eureka
+              servicePort: 8761
