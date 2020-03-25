@@ -16,7 +16,7 @@ then
     warn "运行自动化部署需要安装ansible"
     info "尝试安装ansible"
     exec rpm -Uvh --force --nodeps $base_dir/plugins/ansible/package/*rpm
-    local ret=$?
+    ret=$?
     if [ $ret -ne 0 ] 
     then
         error "安装ansible失败"
@@ -27,5 +27,7 @@ fi
 
 if [ -z $(command -v shyaml) ] 
 then
+    info "开始安装shyaml依赖"
     install_shyaml
+    success "安装shyaml成功"
 fi
