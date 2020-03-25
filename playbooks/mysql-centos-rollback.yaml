@@ -1,6 +1,0 @@
----
-- hosts: dbservers
-  vars_files:
-    - roles/mysql-centos/vars/main.yaml
-  tasks: 
-    - include_tasks: roles/mysql-centos/tasks/rollback.yaml

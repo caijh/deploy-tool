@@ -1,3 +1,0 @@
-commons
-mysql-centos
-service-registry

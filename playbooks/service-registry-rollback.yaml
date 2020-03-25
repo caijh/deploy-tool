@@ -1,4 +1,0 @@
----
-- hosts: k8s
-  tasks:
-    - include_tasks: roles/service-registry/tasks/new-rollback.yaml

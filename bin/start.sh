@@ -3,32 +3,41 @@
 source $(dirname $(cd `dirname $0`;pwd))/bin/env.sh
 source $base_dir/bin/log.sh
 
+deployment_home="playbooks"
+
 function main()
 {
     $base_dir/bin/checkplugins.sh
 
     $base_dir/bin/checksettings.sh
 
-    read_deployment_orders "$base_dir/deployment.orders.txt"
+    deploy_main
 
     deploy_microservices
 }
 
-function read_deployment_orders() {
-    list=()
-    i=0
-    while read line
+function deploy_main() {
+    local length=`cat $base_dir/deployment.yaml | shyaml get-length`
+    local i=0
+    while [ $i -lt $length ] 
     do
-        list[i]=$line
-        i=$[ $i + 1]
-    done <  "$1"
-    for item in  ${list[*]}
-    do
-        deploy_main $item
+        local hosts=$(cat "$base_dir/deployment.yaml" | shyaml get-value $i.hosts)
+        local role_length=$(cat "$base_dir/deployment.yaml" | shyaml get-length $i.roles)
+        local j=0
+        while [ $j -lt $role_length ] 
+        do
+            local role=$(cat "$base_dir/deployment.yaml" | shyaml get-value $i | shyaml get-value roles.$j)
+
+            cat "$base_dir/templates/playbook.yaml" > "$base_dir/$deployment_home/${role}.yaml"
+            sed -i "s/\<host\>/$hosts/;s/\<role\>/$role/" "$base_dir/$deployment_home/${role}.yaml"
+            deploy $role
+            j=$[ $j+1 ]
+        done
+        i=$[ $i+1 ]
     done
 }
 
-function deploy_main()
+function deploy()
 {
     info "开始部署 $1"
 
@@ -79,9 +88,9 @@ function deploy_microservices() {
             rm -rf "$base_dir/tmp/playbooks/roles/$app_name"
         fi
         # 根据模板生成具体的role
-        cat "$base_dir/templates/microservice-playbook.yaml" > "$base_dir/tmp/playbooks/${app_name}.yaml"  
-        sed -i "s/app_name/$app_name/" "$base_dir/tmp/playbooks/${app_name}.yaml"
-        cp -r "$base_dir/templates/microserivce" "$base_dir/tmp/playbooks/roles/$app_name"
+        cat "$base_dir/templates/playbook.yaml" > "$base_dir/tmp/playbooks/${app_name}.yaml"  
+        sed -i "s/\<host\>/k8s/;s/\<role\>/$app_name/" "$base_dir/tmp/playbooks/${app_name}.yaml"
+        cp -r "$base_dir/templates/microservice" "$base_dir/tmp/playbooks/roles/$app_name"
 
         info "开始部署微服务：$app_name"
 

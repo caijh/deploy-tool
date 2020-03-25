@@ -1,4 +1,4 @@
 ---
 - hosts: k8s 
   roles:
-    - mysql-k8s
+    - service-registry
