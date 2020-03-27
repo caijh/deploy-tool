@@ -1,0 +1,6 @@
+---
+mysql_ip: "{{config_center_mysql_id}}"
+k8s_master_ip: "{{hostvars[inventory_hostname]['ansible_default_ipv4']['address']}}"
+mysql_port: "{{config_center_mysql_port}}"
+apollo_config_server_dev_node_port: 30002
+service_apollo_portal_server_node_port: 30001

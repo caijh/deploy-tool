@@ -1,0 +1,85 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: redis
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: nfs-storage
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: redis-conf
+data:
+  redis.conf: |
+    appendonly yes
+    dir /var/lib/redis
+    port 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: 10.38.2.12:1000/library/redis:latest
+        imagePullPolicy: IfNotPresent
+        command:
+          - "redis-server"
+        args:
+          - "/etc/redis/redis.conf"
+          - "--protected-mode"
+          - "no"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "500Mi"
+        ports:
+            - name: redis
+              containerPort: 6379
+              protocol: "TCP"
+        volumeMounts:
+          - name: "redis-conf"
+            mountPath: "/etc/redis"
+          - name: "redis-data"
+            mountPath: "/var/lib/redis"
+      volumes:
+      - name: "redis-conf"
+        configMap:
+          name: "redis-conf"
+          items:
+            - key: "redis.conf"
+              path: "redis.conf"
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  type: NodePort
+  ports:
+    - port: 6379
+      nodePort: {{redis_port}}
+  selector:
+    app: redis

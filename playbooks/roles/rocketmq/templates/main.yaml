@@ -1,0 +1,264 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: rocketmq
+  namespace: {{k8s_namespace}}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs-storage
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rocketmq-conf
+  namespace: {{k8s_namespace}}
+data:
+  broker.conf: |
+    brokerClusterName=DefaultCluster
+    brokerName=broker-a
+    brokerId=0
+    brokerIP1={{k8s_master_ip}}
+    namesrvAddr=rocketmq:{{rocketmq_port}}
+    defaultTopicQueueNums=4
+    autoCreateTopicEnable=true
+    autoCreateSubscriptionGroup=true
+    listenPort={{rocketmq_broker_port}}
+    deleteWhen=04
+    fileReservedTime=120
+    mapedFileSizeCommitLog=1073741824
+    mapedFileSizeConsumeQueue=300000
+    diskMaxUsedSpaceRatio=88
+    storePathRootDir=/opt/store
+    maxMessageSize=65536
+    brokerRole=ASYNC_MASTER
+    flushDiskType=ASYNC_FLUSH
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rocketmq
+  namespace: {{k8s_namespace}}
+  labels:
+    app: rocketmq
+spec:
+  serviceName: rocketmq
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocketmq
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: rocketmq
+    spec:
+      containers:
+      - name: rocketmq
+        image: 10.38.2.12:1000/library/foxiswho/rocketmq:server
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1000Mi
+          requests:
+            cpu: 100m
+            memory: 768Mi
+        readinessProbe:
+          tcpSocket:
+            port: 9876
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 9876
+          initialDelaySeconds: 120
+          periodSeconds: 10
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: JAVA_OPT
+          value: -Duser.home=/opt
+        - name: JAVA_OPT_EXT
+          value: -server -Xms768m -Xmx768m -Xmn256m
+        ports:
+        - containerPort: 9876
+        volumeMounts:
+        - name: rocketmq-data
+          mountPath: /opt/logs
+          subPath: logs
+        - name: rocketmq-data
+          mountPath: /opt/store
+          subPath: store
+      volumes:
+      - name: rocketmq-data
+        persistentVolumeClaim:
+          claimName: rocketmq
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmq
+  namespace: {{k8s_namespace}}
+  labels:
+    app: rocketmq
+spec:
+  type: NodePort
+  ports:
+  - port: 9876
+    targetPort: 9876
+    nodePort: {{rocketmq_port}}
+  selector:
+    app: rocketmq
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rmqbroker
+  namespace: {{k8s_namespace}}
+  labels:
+    app: rmqbroker
+spec:
+  serviceName: rmqbroker
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rmqbroker
+  template:
+    metadata:
+      labels:
+        app: rmqbroker
+    spec:
+      containers:
+      - name: rmqbroker
+        image: 10.38.2.12:1000/library/foxiswho/rocketmq:broker
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1000Mi
+          requests:
+            cpu: 100m
+            memory: 512Mi
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: NAMESRV_ADDR
+          value: rocketmq:9876
+        - name: JAVA_OPT_EXT
+          value:  -Duser.home=/opt -server -Xms512m -Xmx512m -Xmn128m
+        command: ["mqbroker","-c","/etc/rocketmq/broker.conf","-n","rocketmq:9876","autoCreateTopicEnable=true"]
+        ports:
+        - containerPort: 10911
+        volumeMounts:
+        - name: rocketmq-data
+          mountPath: /opt/logs
+          subPath: logs-b
+        - name: rocketmq-data
+          mountPath: /opt/store
+          subPath: store-b
+        - name: rocketmq-conf
+          mountPath: /etc/rocketmq
+      volumes:
+      - name: rocketmq-data
+        persistentVolumeClaim:
+          claimName: rocketmq
+      - name: "rocketmq-conf"
+        configMap:
+          name: "rocketmq-conf"
+          items:
+            - key: "broker.conf"
+              path: "broker.conf"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rmqbroker
+  namespace: {{k8s_namespace}}
+  labels:
+    app: rmqbroker
+spec:
+  type: NodePort
+  ports:
+    - port: 30911
+      targetPort: 30911
+      nodePort: {{rocketmq_broker_port}}
+  selector:
+    app: rmqbroker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rmqui
+  namespace: {{k8s_namespace}}
+  labels:
+    app: rmqui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rmqui
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: rmqui
+    spec:
+      containers:
+      - name: rmqui
+        image: 10.38.2.12:1000/library/styletang/rocketmq-console-ng
+        resources:
+          limits:
+            cpu: 450m
+            memory: 1768Mi
+          requests:
+            cpu: 100m
+            memory: 768Mi
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 15
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: JAVA_OPTS
+          value: -Drocketmq.namesrv.addr=rocketmq:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false -Duser.home=/root  -Xms768m -Xmx768m
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: rocketmq-data
+          mountPath: /root/logs
+          subPath: logs-ui
+      volumes:
+      - name: rocketmq-data
+        persistentVolumeClaim:
+          claimName: rocketmq
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rmqui
+  namespace: {{k8s_namespace}}
+  labels:
+    app: rmqui
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: {{rocketmq_ui_port}}
+  selector:
+    app: rmqui

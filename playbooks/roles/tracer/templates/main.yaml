@@ -1,0 +1,125 @@
+# tracer-server.yml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tracer-cm
+  namespace: {{k8s_namespace}}
+data:
+  app_id: hjmos-tracer-server
+  apollo_meta: http://{{k8s_master_ip}}:{{apollo_config_server_dev_node_port}}
+  apollo_bootstrap: "false"
+  storage_type: mysql
+  storage_mysql_host: {{tracer_storage_mysql_host}}
+  storage_mysql_port: {{tracer_storage_mysql_port}}
+  storage_mysql_username: {{tracer_storage_mysql_username}}
+  storage_mysql_password: {{tracer_storage_mysql_password}}
+  storage_mysql_database: {{tracer_storage_mysql_database}}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tracer
+  namespace: {{k8s_namespace}}
+spec:
+  serviceName: 'tracer'
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tracer # 符合目标的Pod有此标签
+  template:
+    metadata:
+      labels:
+        app: tracer  # Pod副本的标签
+    spec:
+      containers:
+        - name: tracer-server
+          image: 10.38.2.12:1000/library/tracer-server:v1.0.1
+          ports:
+            - containerPort: 9411
+          env:
+            - name: APP_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: tracer-cm
+                  key: app_id
+            - name: APOLLO_META
+              valueFrom:
+                configMapKeyRef:
+                  name: tracer-cm
+                  key: apollo_meta
+            - name: APOLLO_BOOTSTRAP
+              valueFrom:
+                configMapKeyRef:
+                  name: tracer-cm
+                  key: apollo_bootstrap
+            - name: STORAGE_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: tracer-cm
+                  key: storage_type
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: tracer-cm
+                  key: storage_mysql_host
+            - name: MYSQL_TCP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: tracer-cm
+                  key: storage_mysql_port
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: tracer-cm
+                  key: storage_mysql_username
+            - name: MYSQL_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: tracer-cm
+                  key: storage_mysql_password
+            - name: MYSQL_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: tracer-cm
+                  key: storage_mysql_database
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tracer
+  namespace: {{k8s_namespace}}
+  labels:
+    app: tracer
+spec:
+  clusterIP: None
+  ports:
+    - port: 9411
+      name: tracer
+  selector:
+    app: tracer
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: tracer-server-ingress
+  namespace: {{k8s_namespace}}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite /zipkin/(.*)  /tracer-server/zipkin/$1 break;
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /tracer-server(/|$)(.*)
+            backend:
+              serviceName: tracer
+              servicePort: 9411
+

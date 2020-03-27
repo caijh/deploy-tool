@@ -1,4 +1,7 @@
 ---
 - hosts: k8s 
   roles:
+    - redis
+    - kafka
+    - rocketmq
     - service-registry
