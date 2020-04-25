@@ -1,0 +1,2 @@
+bin_dir: "/opt/docker"
+DOCKER_VER: "19.03.8"
