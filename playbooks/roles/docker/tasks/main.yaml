@@ -69,8 +69,8 @@
       tags: upgrade_docker, download_docker
       when: "DOCKER_VER|float >= 18.09"
 
-    - name: docker命令自动补全
-      copy: src=docker dest=/etc/bash_completion.d/docker mode=0644
+    #    - name: docker命令自动补全
+    #      copy: src=docker dest=/etc/bash_completion.d/docker mode=0644
 
     - name: docker国内镜像加速
       template: src=daemon.json.j2 dest=/etc/docker/daemon.json
