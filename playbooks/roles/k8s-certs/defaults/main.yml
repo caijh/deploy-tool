@@ -5,5 +5,3 @@ CERT_EXPIRY: "438000h"
 KUBE_APISERVER: "https://{{ groups['kube-master'][0] }}:6443"
 
 CLUSTER_NAME: "kubernetes"
-
-CREATE_READONLY_KUBECONFIG: false
