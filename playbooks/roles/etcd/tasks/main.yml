@@ -5,11 +5,6 @@
   run_once: true
 
 - block:
-    - name: prepare some dirs
-      file: name={{ item }} state=directory
-      with_items:
-        - "{{ base_dir }}/.cluster/ssl"
-        - "{{ base_dir }}/.cluster/backup"
     - name: 本地设置 bin 目录权限
       file: path={{ base_dir }}/plugins/cfssl state=directory mode=0755 recurse=yes
     - name: 创建etcd证书请求

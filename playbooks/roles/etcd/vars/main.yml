@@ -1,3 +1,2 @@
 ---
 bin_dir: "/opt/etcd"
-ca_dir: "/etc/kubernetes/pki"
