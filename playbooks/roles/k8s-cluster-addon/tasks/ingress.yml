@@ -1,0 +1,34 @@
+- name: ingress部署Yaml文件
+  template: src={{ item }}.yaml.j2 dest={{ base_dir }}/playbooks/roles/{{role_name}}/files/ingress/{{ item }}.yaml
+  with_items:
+    - nginx-ingress
+  connection: local
+  run_once: true
+
+- block:
+    - block:
+        - name: 尝试推送离线 nginx-ingress镜像（若执行失败，可忽略）
+          copy: src={{ base_dir }}/requires/{{ nginx_ingress_offline }} dest=/opt/kube/images/{{ nginx_ingress_offline }}
+          when: 'nginx_ingress_offline in download_info.stdout'
+          with_items:
+            - "{{ nginx_ingress_offline }}"
+            - "kube-webhook-certgen_v1.2.0.docker"
+
+        - name: 获取nginx_ingress离线镜像推送情况
+          command: "ls /opt/kube/images"
+          register: image_info
+
+        - name: 导入 nginx_ingress的离线镜像（若执行失败，可忽略）
+          shell: "{{ bin_dir }}/docker load -i /opt/kube/images/{{ nginx_ingress_offline }}"
+          when: 'nginx_ingress_offline in image_info.stdout and CONTAINER_RUNTIME == "docker"'
+
+        - name: 导入 nginx_ingress的离线镜像（若执行失败，可忽略）
+          shell: "{{ bin_dir }}/ctr -n=k8s.io images import /opt/kube/images/{{ nginx_ingress_offline }}"
+          when: 'nginx_ingress_offline in image_info.stdout and CONTAINER_RUNTIME == "containerd"'
+
+    - name: 创建 nginx_ingress部署
+      shell: "{{ base_dir }}/plugins/kube/kubectl apply -f {{ base_dir }}/playbooks/roles/{{role_name}}/files/ingress/nginx-ingress.yaml --kubeconfig={{base_dir}}/.cluster/admin.kubeconfig"
+      connection: local
+      run_once: true
+  when: 'ingress_backend == "nginx-ingress"'
+  ignore_errors: true

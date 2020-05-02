@@ -1,0 +1,37 @@
+# dns 自动安装，'dns_backend'可选"coredns"和“kubedns”
+dns_install: "yes"
+dns_backend: "coredns"
+# 设置 dns svc ip (这里选用 SERVICE_CIDR 中第2个IP)
+CLUSTER_DNS_SVC_IP: "{{ SERVICE_CIDR | ipaddr('net') | ipaddr(2) | ipaddr('address') }}"
+kubednsVer: "1.14.13"
+corednsVer: "1.6.6"
+kubedns_offline: "kubedns_{{ kubednsVer }}.docker"
+coredns_offline: "coredns_{{ corednsVer }}.docker"
+dns_offline: "{%- if dns_backend == 'coredns' -%} \
+                {{ coredns_offline }} \
+              {%- else -%} \
+                {{ kubedns_offline }} \
+              {%- endif -%}"
+
+# metric server 自动安装
+metricsserver_install: "yes"
+metricsVer: "v0.3.6"
+metricsserver_offline: "metrics-server_{{ metricsVer }}.tar"
+
+# dashboard 自动安装
+# dashboard v2.x.x 不依赖于heapster
+dashboard_install: "yes"
+dashboardVer: "v2.0.0"
+dashboard_offline: "dashboard_{{ dashboardVer }}.docker"
+dashboardMetricsScraperVer: "v1.0.4"
+metricsscraper_offline: "metrics-scraper_{{ dashboardMetricsScraperVer }}.docker"
+
+# ingress 自动安装，可选 "traefik" 和 "nginx-ingress"
+ingress_install: "yes"
+ingress_backend: "nginx-ingress"
+nginxingVer: "0.32.0"
+nginx_ingress_offline: "nginx_ingress_{{ nginxingVer }}.docker"
+
+
+
+
