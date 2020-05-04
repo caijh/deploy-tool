@@ -1,4 +1,5 @@
 .idea/
+*.iml
 plugins/**
 !plugins/init/
 !plugins/ansible/

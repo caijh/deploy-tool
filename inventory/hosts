@@ -1,9 +1,21 @@
 # k8s cluster one master node, one only, no more need
 [k8s]
-10.38.2.12
+192.168.33.10
 
-[dbservers]
-192.168.106.131
+[etcd]
+192.168.33.10
+192.168.33.11
+192.168.33.12
 
-[clients]
-192.168.106.130
+[kube-master]
+192.168.33.10
+
+[kube-node]
+192.168.33.10
+192.168.33.11
+192.168.33.12
+
+# [optional] loadbalance for accessing k8s from outside
+[ex-lb]
+#192.168.1.6 LB_ROLE=backup EX_APISERVER_VIP=192.168.1.250 EX_APISERVER_PORT=8443
+#192.168.1.7 LB_ROLE=master EX_APISERVER_VIP=192.168.1.250 EX_APISERVER_PORT=8443

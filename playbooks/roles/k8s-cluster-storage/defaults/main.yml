@@ -1,0 +1,9 @@
+# 动态存储类型, 目前支持自建nfs
+storage:
+  nfs:
+    enabled: "yes"
+    server: "192.168.33.10"
+    server_path: "/data/nfs"
+    storage_class: "nfs-storage"
+    provisioner_name: "nfs"
+

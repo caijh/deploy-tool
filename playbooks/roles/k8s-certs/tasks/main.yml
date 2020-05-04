@@ -27,7 +27,6 @@
 
 #----------- 创建admin kubectl kubeconfig文件
 - import_tasks: create-kubectl-kubeconfig.yml
-  tags: create_kctl_cfg
 
 #------------创建配置文件: kube-proxy.kubeconfig
 - import_tasks: create-kube-proxy-kubeconfig.yml

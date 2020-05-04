@@ -1,2 +1,32 @@
 upload_remote_dir: /tmp/deploy-tool
 win_upload_remote_dir: C:\Temp
+ansible_ssh_user: root
+
+# Cluster container-runtime supported: docker, containerd
+DOCKER_VER: "19.03.8"
+CONTAINER_RUNTIME: "docker"
+
+# Network plugins supported: calico, flannel, kube-router, cilium, kube-ovn
+CLUSTER_NETWORK: "flannel"
+
+# Service proxy mode of kube-proxy: 'iptables' or 'ipvs'
+PROXY_MODE: "ipvs"
+
+# K8S Service CIDR, not overlap with node(host) networking
+SERVICE_CIDR: "10.244.0.0/16"
+
+# Cluster CIDR (Pod CIDR), not overlap with node(host) networking
+CLUSTER_CIDR: "172.244.0.0/16"
+
+# NodePort Range
+NODE_PORT_RANGE: "20000-40000"
+
+# Cluster DNS Domain
+CLUSTER_DNS_DOMAIN: "cluster.local."
+
+# -------- Additional Variables (don't change the default value right now) ---
+# Binaries Directory
+bin_dir: "/usr/bin"
+
+# CA and other components cert/key Directory
+ca_dir: "/etc/kubernetes/pki"

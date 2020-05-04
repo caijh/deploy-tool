@@ -1,0 +1,12 @@
+- name: 准备nfs-client 配置目录
+  file:
+    name: "{{ base_dir }}/tmp/playbooks/roles/{{ role_name }}/files/nfs"
+    state: directory
+
+- name: 生成nfs-client动态存储配置
+  template:
+    src: nfs/nfs-client-provisioner.yaml.j2
+    dest: "{{ base_dir }}/tmp/playbooks/roles/{{ role_name }}/files/nfs/nfs-client-provisioner.yaml"
+
+- name: 部署nfs-client动态存储
+  shell: "{{ base_dir }}/plugins/kube/kubectl apply -f {{ base_dir }}/tmp/playbooks/roles/{{ role_name }}/files/nfs/nfs-client-provisioner.yaml --kubeconfig={{ base_dir }}/.cluster/admin.kubeconfig"

@@ -1,5 +1,5 @@
 - name: ingress部署Yaml文件
-  template: src={{ item }}.yaml.j2 dest={{ base_dir }}/playbooks/roles/{{role_name}}/files/ingress/{{ item }}.yaml
+  template: src={{ item }}.yaml.j2 dest={{ role_path }}/files/ingress/{{ item }}.yaml
   with_items:
     - nginx-ingress
   connection: local
@@ -27,7 +27,7 @@
           when: 'nginx_ingress_offline in image_info.stdout and CONTAINER_RUNTIME == "containerd"'
 
     - name: 创建 nginx_ingress部署
-      shell: "{{ base_dir }}/plugins/kube/kubectl apply -f {{ base_dir }}/playbooks/roles/{{role_name}}/files/ingress/nginx-ingress.yaml --kubeconfig={{base_dir}}/.cluster/admin.kubeconfig"
+      shell: "{{ base_dir }}/plugins/kube/kubectl apply -f {{ role_path }}/files/ingress/nginx-ingress.yaml --kubeconfig={{base_dir}}/.cluster/admin.kubeconfig"
       connection: local
       run_once: true
   when: 'ingress_backend == "nginx-ingress"'

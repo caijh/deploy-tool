@@ -18,7 +18,7 @@
 - block:
     # DNS文件中部分参数根据hosts文件设置而定，因此需要用template模块替换参数
     - name: 准备DNS部署Yaml文件
-      template: src={{ item }}.yaml.j2 dest={{ base_dir}}/playbooks/roles/{{role_name}}/files/dns/{{ item }}.yaml
+      template: src={{ item }}.yaml.j2 dest={{ role_path }}/files/dns/{{ item }}.yaml
       with_items:
         - kubedns
         - coredns
@@ -38,7 +38,7 @@
           shell: "{{ bin_dir }}/ctr -n=k8s.io images import /opt/kube/images/{{ dns_offline }}"
           when: 'dns_offline in image_info.stdout and CONTAINER_RUNTIME == "containerd"'
     - name: 创建{{ dns_backend }}部署
-      shell: "{{ base_dir }}/plugins/kube/kubectl apply -f {{ base_dir}}/playbooks/roles/{{role_name}}/files/dns/{{ dns_backend }}.yaml --kubeconfig={{base_dir}}/.cluster/admin.kubeconfig"
+      shell: "{{ base_dir }}/plugins/kube/kubectl apply -f {{ role_path }}/files/dns/{{ dns_backend }}.yaml --kubeconfig={{base_dir}}/.cluster/admin.kubeconfig"
       connection: local
       run_once: true
   when:
@@ -77,11 +77,9 @@
 # dashboard v2.x.x 不依赖于heapster
 - block:
     - name: 准备Dashboard部署Yaml文件
-      template: src={{ item }}.yaml.j2 dest={{ base_dir }}/playbooks/roles/{{role_name}}/files/dashboard/{{ item }}.yaml
+      template: src={{ item }}.yaml.j2 dest={{ role_path }}/files/dashboard/{{ item }}.yaml
       with_items:
         - kube-dashboard
-        - admin-user-sa-rbac
-        - read-user-sa-rbac
       connection: local
       run_once: true
     - block:
@@ -110,7 +108,7 @@
             - "{{ metricsscraper_offline }}"
           when: "item in image_info.stdout and CONTAINER_RUNTIME == 'containerd'"
     - name: 创建 dashboard部署
-      shell: "{{ base_dir }}/plugins/kube/kubectl apply -f {{ base_dir }}/playbooks/roles/{{role_name}}/files/dashboard --kubeconfig={{base_dir}}/.cluster/admin.kubeconfig"
+      shell: "{{ base_dir }}/plugins/kube/kubectl apply -f {{ role_path }}/files/dashboard --kubeconfig={{base_dir}}/.cluster/admin.kubeconfig"
       connection: local
       run_once: true
   when: '"kubernetes-dashboard" not in pod_info.stdout and dashboard_install == "yes"'

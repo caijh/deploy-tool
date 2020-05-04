@@ -1,4 +1,37 @@
-# to create CA, kubeconfig, kube-proxy.kubeconfig etc.
 - hosts: localhost
   roles:
-  - k8s-certs
+    - k8s-certs
+
+- hosts: kube-master, kube-node
+  roles:
+    - k8s-prepare
+    - docker
+
+- hosts: etcd
+  roles:
+    - etcd
+
+- hosts: kube-master
+  roles:
+    - kube-master
+
+- hosts:
+    - kube-master
+    - kube-node
+  roles:
+    - kube-node
+
+- hosts:
+    - kube-master
+    - kube-node
+  roles:
+    - { role: flannel, when: "CLUSTER_NETWORK == 'flannel'" }
+
+- hosts:
+    - kube-node
+  roles:
+    - k8s-cluster-addon
+- hosts:
+    - localhost
+  roles:
+    - k8s-cluster-storage
