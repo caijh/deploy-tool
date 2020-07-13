@@ -4,12 +4,18 @@ bin="${BASH_SOURCE-$0}"
 bin_dir="$(cd "$(dirname "$bin")" || exit ; pwd)"
 base_dir=$(dirname "$bin_dir")
 
-K8S_VER=v1.18.0
-ETCD_VER=v3.4.7
-DOCKER_VER=19.03.8
-CNI_VER=v0.8.5
-DOCKER_COMPOSE_VER=1.23.2
-HARBOR_VER=v1.9.4
+if [ -z "$(command -v shyaml)" ]; then
+  pip install shyaml
+fi
+
+props=$(cat "$base_dir/inventory/group_vars/all.yml")
+
+ETCD_VER=$(echo "${props}" | shyaml get-value "ETCD_VER")
+DOCKER_VER=$(echo "${props}" | shyaml get-value "DOCKER_VER")
+K8S_VER=$(echo "${props}" | shyaml get-value "K8S_VER")
+CNI_VER=$(echo "${props}" | shyaml get-value "CNI_VER")
+DOCKER_COMPOSE_VER=$(echo "${props}" | shyaml get-value "DOCKER_COMPOSE_VER")
+HARBOR_VER=$(echo "${props}" | shyaml get-value "HARBOR_VER")
 CONTAINERD_VER=1.2.6
 
 echo -e "\n----download ca tools"
@@ -18,14 +24,16 @@ wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -t 0 --continue -O "$base_
 wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -t 0 --continue -O "$base_dir/plugins/cfssl/cfssl-certinfo"
 
 echo -e "\n----download docker binary at:"
-wget https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VER}.tar.tgz -t 0 --continue
+wget "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VER}.tar.tgz" -t 0 --continue
+
+echo -e "\n----download etcd binary at:"
+wget "https://github.com/etcd-io/etcd/releases/download/${ETCD_VER}/etcd-${ETCD_VER}-linux-amd64.tar.gz" -t 0 --continue
+# 解压文件至plugins/etcd
 
 echo -e "\n----download k8s binary"
 wget https://dl.k8s.io/${K8S_VER}/kubernetes-server-linux-amd64.tar.gz
+#tar  xzvf kubernetes-server-linux-amd64.tar.gz
 
-echo -e "\n----download etcd binary at:"
-wget https://github.com/etcd-io/etcd/releases/download/${ETCD_VER}/etcd-${ETCD_VER}-linux-amd64.tar.gz
-# 解压文件至plugins/etcd
 
 echo -e "\n----download cni plugins at:"
 wget https://github.com/containernetworking/plugins/releases/download/${CNI_VER}/cni-plugins-linux-amd64-${CNI_VER}.tgz
@@ -41,7 +49,7 @@ wget https://github.com/containernetworking/plugins/releases/download/${CNI_VER}
 # echo -e "\n----download containerd at:"
 # echo -e  https://storage.googleapis.com/cri-containerd-release/cri-containerd-${CONTAINERD_VER}.linux-amd64.tar.gz
 
-function get_offline_image() {
+function download_offline_image() {
   # images needed by k8s cluster
   corednsVer=1.6.6
   metricsVer="v0.3.6"
@@ -81,3 +89,5 @@ function get_offline_image() {
   fi
 }
 
+
+download_offline_image
