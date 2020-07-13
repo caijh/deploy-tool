@@ -22,10 +22,6 @@
   set_fact:
     DOCKER_VER: "{{ docker_ver.stdout.split('.')[0]|int + docker_ver.stdout.split('.')[1]|int/100 }}"
 
-- name: 获取是否已经安装containerd
-  shell: 'systemctl status containerd|grep Active || echo "NOT FOUND"'
-  register: containerd_status
-
 - name: 获取docker是否正在运行
   shell: 'systemctl status docker | grep Active || echo "NOT FOUND"'
   register: install_info
@@ -62,9 +58,6 @@
         - dockerd
         - docker-proxy
       when: "DOCKER_VER|float >= 18.09"
-
-    #    - name: docker命令自动补全
-    #      copy: src=docker dest=/etc/bash_completion.d/docker mode=0644
 
     - name: docker国内镜像加速
       template: src=daemon.json.j2 dest=/etc/docker/daemon.json
