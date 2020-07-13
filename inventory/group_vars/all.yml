@@ -2,12 +2,12 @@ upload_remote_dir: /tmp/deploy-tool
 win_upload_remote_dir: C:\Temp
 ansible_ssh_user: root
 
-# version info
-K8S_VER: v1.18.0
+# Version info
+K8S_VER: v1.17.8
 ETCD_VER: v3.4.7
 CNI_VER: v0.8.5
-DOCKER_COMPOSE_VER: 1.23.2
-HARBOR_VER: v1.9.4
+DOCKER_COMPOSE_VER: 1.26.2
+HARBOR_VER: v1.10.3
 
 # Cluster container-runtime supported: docker, containerd
 DOCKER_VER: "19.03.8"
