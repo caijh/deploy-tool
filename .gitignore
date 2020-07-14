@@ -13,3 +13,5 @@ tmp/**
 
 requires/**
 !requires/**/*.sh
+
+.cluster/

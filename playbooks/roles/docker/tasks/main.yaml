@@ -1,8 +1,3 @@
-- name: Unzip docker.tgz
-  shell: tar xzvf {{ base_dir }}/requires/docker-{{ DOCKER_VER }}.tar.tgz -C {{ base_dir }}/plugins
-  connection: local
-  run_once: true
-
 - name: Make tmp/docker/* exec
   shell: chmod +x {{ base_dir }}/plugins/docker/*
   connection: local
@@ -90,5 +85,5 @@
     - name: 配置 docker 命令软链接
       file: src={{ bin_dir }}/docker dest=/usr/bin/docker state=link
       ignore_errors: true
-    when: "{{ bin_dir }} != '/usr/bin'"
+      when: "{{ bin_dir }} != '/usr/bin'"
   when: "'NOT FOUND' in install_info.stdout"
