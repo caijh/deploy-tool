@@ -2,8 +2,8 @@
 *.iml
 **/.DS_Store
 
-plugins/**
-!plugins/**/.gitkeep
+plugins/*
+!plugins/.gitkeep
 
 logs/**
 !logs/**/.gitkeep
