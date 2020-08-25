@@ -5,13 +5,13 @@
 plugins/*
 !plugins/.gitkeep
 
-logs/**
-!logs/**/.gitkeep
+logs/*
+!logs/.gitkeep
 
-tmp/**
-!tmp/**/.gitkeep
+tmp/*
+!tmp/.gitkeep
 
-requires/**
-!requires/**/*.sh
+requires/*
+!requires/*.sh
 
 .cluster/
