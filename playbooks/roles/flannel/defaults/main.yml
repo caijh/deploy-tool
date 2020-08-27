@@ -8,4 +8,4 @@ DIRECT_ROUTING: false
 flanneld_image: "quay.mirrors.ustc.edu.cn/coreos/flannel:v0.12.0-amd64"
 
 # 离线镜像tar包
-flannel_offline: "flanneld-v0.12.0-amd64.docker"
+flannel_offline: "flannel_v0.12.0-amd64.docker"
