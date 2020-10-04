@@ -59,5 +59,5 @@ echo -e "\n----download cni plugins at:"
 wget "https://github.com/containernetworking/plugins/releases/download/${CNI_VER}/cni-plugins-linux-amd64-${CNI_VER}.tgz" -t 0 --continue -O "cni-plugins-linux-amd64-${CNI_VER}.tgz"
 tar xzvf "cni-plugins-linux-amd64-${CNI_VER}.tgz" -C "$base_dir/plugins/kube"
 
-#echo -e "\n----download harbor-offline-installer at:"
-#wget "https://storage.googleapis.com/harbor-releases/harbor-offline-installer-${HARBOR_VER}.tgz" -t 0 --continue -O "harbor-offline-installer-${HARBOR_VER}.tgz"
+echo -e "\n----download harbor-offline-installer at:"
+wget "https://github.com/goharbor/harbor/releases/download/${HARBOR_VER}/harbor-offline-installer-${HARBOR_VER}.tgz" -t 0 --continue -O "harbor-offline-installer-${HARBOR_VER}.tgz"

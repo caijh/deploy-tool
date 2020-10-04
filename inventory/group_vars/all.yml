@@ -7,7 +7,7 @@ K8S_VER: v1.17.8
 ETCD_VER: v3.4.7
 CNI_VER: v0.8.5
 DOCKER_COMPOSE_VER: 1.26.2
-HARBOR_VER: v1.10.3
+HARBOR_VER: v2.1.0
 
 # Cluster container-runtime supported: docker, containerd
 DOCKER_VER: "19.03.8"
@@ -29,7 +29,7 @@ CLUSTER_CIDR: "172.244.0.0/16"
 NODE_PORT_RANGE: "20000-40000"
 
 # Cluster DNS Domain
-CLUSTER_DNS_DOMAIN: "cluster.local."
+CLUSTER_DNS_DOMAIN: "cluster.local"
 
 # -------- Additional Variables (don't change the default value right now) ---
 # Binaries Directory
